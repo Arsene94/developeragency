@@ -15,11 +15,6 @@ const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 6;
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 9a3dbce0d1158c13dd344f8251aa4f03f54e442c
   const projects: Project[] = [
     {
       id: 1,
@@ -113,11 +108,6 @@ const Portfolio: React.FC = () => {
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
 
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-  const indexOfLastProject = currentPage * projectsPerPage;
-  const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
-
   const categories = [
     { value: 'all', label: 'Toate' },
     { value: 'e-commerce', label: 'E-commerce' },
@@ -139,7 +129,6 @@ const Portfolio: React.FC = () => {
   };
 
   return (
-<<<<<<< HEAD
       <section id="portfolio" className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -191,57 +180,6 @@ const Portfolio: React.FC = () => {
                         </a>
                       </div>
                     </div>
-=======
-    <section id="portfolio" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <span className="text-teal-500 font-medium">PORTOFOLIU</span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4">Proiecte Recente</h2>
-          <p className="max-w-2xl mx-auto text-gray-600">
-            Explorează o selecție din proiectele noastre recente, care demonstrează expertiza și calitatea serviciilor noastre.
-          </p>
-        </div>
-        
-        <div className="flex flex-wrap justify-center mb-10 gap-2">
-          {categories.map((category, index) => (
-            <button
-              key={index}
-              onClick={() => handleFilterChange(category.value)}
-              className={`px-4 py-2 rounded-md transition-all duration-200 ${
-                filter === category.value
-                  ? 'bg-teal-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {currentProjects.map((project) => (
-            <div 
-              key={project.id}
-              className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
-            >
-              <div className="relative overflow-hidden h-64">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                  <div className="p-4 w-full">
-                    <a 
-                      href={project.link} 
-                      className="flex items-center justify-center bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-md transition-all duration-200"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Vezi proiectul
-                      <ExternalLink size={16} className="ml-2" />
-                    </a>
->>>>>>> 9a3dbce0d1158c13dd344f8251aa4f03f54e442c
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-2 text-gray-800">{project.title}</h3>
@@ -300,11 +238,6 @@ const Portfolio: React.FC = () => {
                 </button>
               </div>
           )}
-        </div>
-<<<<<<< HEAD
-      </section>
-=======
-
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-12 flex justify-center items-center space-x-2">
@@ -319,7 +252,7 @@ const Portfolio: React.FC = () => {
             >
               <ChevronLeft size={20} />
             </button>
-            
+
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
@@ -333,7 +266,7 @@ const Portfolio: React.FC = () => {
                 {index + 1}
               </button>
             ))}
-            
+
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -349,7 +282,6 @@ const Portfolio: React.FC = () => {
         )}
       </div>
     </section>
->>>>>>> 9a3dbce0d1158c13dd344f8251aa4f03f54e442c
   );
 };
 
