@@ -10,8 +10,8 @@ export interface Role {
   name: string;
   description: string;
   permissions: string[];
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface User {
@@ -20,5 +20,7 @@ export interface User {
   email: string;
   role: Role;
   status: 'active' | 'inactive';
-  lastLogin: string;
+  last_login: string;
+  created_at: string;
+  updated_at: string;
 }
