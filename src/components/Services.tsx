@@ -9,7 +9,7 @@ import {
   FileCode,
   PenSquare,
   Settings,
-  PanelLeft
+  PanelLeft, Wrench
 } from 'lucide-react';
 
 interface ServiceCardProps {
@@ -78,7 +78,12 @@ const Services: React.FC = () => {
     {
       icon: <Settings size={36} />,
       title: 'Automatizari',
-      description: 'Iti putem automatiza flow-urile pentru a iti economisi timp si bani'
+      description: 'Iti putem automatiza flow-urile pentru a iti economisi timp si bani.'
+    },
+    {
+      icon: <Wrench size={36} />,
+      title: 'DevOPS',
+      description: 'Iti putem configura serverul dedicat pe Microsoft Azure. Avem oameni calificati si certificati.'
     }
   ];
 
