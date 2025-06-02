@@ -11,7 +11,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ServicePage from './pages/ServicePage';
 import LoginPage from './pages/LoginPage';
-import AdminNavbar from './admin/AdminNavbar.tsx';
+import AdminNavbar from './admin/AdminNavbar';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import AdminPortfolio from './admin/AdminPortfolio';
@@ -20,6 +20,9 @@ import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminUserCreate from "./admin/AdminUserCreate.tsx";
 import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 import PrivateRoute from "./context/PrivateRoute.tsx";
+import RolesList from "./admin/RolesList";
+import RoleCreate from "./admin/RoleCreate";
+import RoleEdit from "./admin/RoleEdit";
 
 function HomePage() {
   return (
@@ -49,22 +52,25 @@ function App() {
           <Route path="/services/:slug" element={<ServicePage />} />
           <Route path="zjadminwebarcats/login" element={<LoginPage />} />
 
-            {/* Admin Routes */}
-              <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
-                  <Route element={<AdminNavbar />}>
-                      <Route index element={<AdminDashboard />} />
-                      <Route path="users" element={<AdminUsers />} />
-                      <Route path="users/create" element={<AdminUserCreate />} />
-                      <Route path="users/edit/:id" element={<AdminUserEdit />} />
-                      <Route path="services" element={<AdminServices />} />
-                      <Route path="portfolio" element={<AdminPortfolio />} />
-                      <Route path="testimonials" element={<AdminTestimonials />} />
-                  </Route>
-              </Route>
-            </Routes>
-          <Footer />
-        </div>
-      </Router>
+          {/* Admin Routes */}
+          <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
+            <Route element={<AdminNavbar />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/create" element={<AdminUserCreate />} />
+              <Route path="users/edit/:id" element={<AdminUserEdit />} />
+              <Route path="roles" element={<RolesList />} />
+              <Route path="roles/create" element={<RoleCreate />} />
+              <Route path="roles/edit/:id" element={<RoleEdit />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="portfolio" element={<AdminPortfolio />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
+            </Route>
+          </Route>
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
