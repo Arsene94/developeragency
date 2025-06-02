@@ -1,18 +1,19 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
-    LayoutDashboard,
-    FileText,
+    Dashboard,
+    Description,
     Image,
-    MessageSquare,
-    Menu,
-    X,
-    ChevronDown,
-    Users,
+    Message,
+    Menu as MenuIcon,
+    Close,
+    ExpandMore,
+    People,
     Settings,
-    Bell,
-    HelpCircle
-} from 'lucide-react';
+    Notifications,
+    Help
+} from '@mui/icons-material';
+import { IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Collapse, AppBar, Toolbar, Typography } from '@mui/material';
 
 const AdminNavbar: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
@@ -23,13 +24,13 @@ const AdminNavbar: React.FC = () => {
         {
             id: 'dashboard',
             path: '/admin',
-            icon: <LayoutDashboard size={20} />,
+            icon: <Dashboard />,
             label: 'Dashboard'
         },
         {
             id: 'content',
             label: 'Conținut',
-            icon: <FileText size={20} />,
+            icon: <Description />,
             submenu: [
                 { path: '/admin/services', label: 'Servicii' },
                 { path: '/admin/portfolio', label: 'Portofoliu' },
@@ -39,7 +40,7 @@ const AdminNavbar: React.FC = () => {
         {
             id: 'users',
             label: 'Utilizatori',
-            icon: <Users size={20} />,
+            icon: <People />,
             submenu: [
                 { path: '/admin/users', label: 'Toți Utilizatorii' },
                 { path: '/admin/roles', label: 'Roluri' }
@@ -48,7 +49,7 @@ const AdminNavbar: React.FC = () => {
         {
             id: 'settings',
             label: 'Setări',
-            icon: <Settings size={20} />,
+            icon: <Settings />,
             submenu: [
                 { path: '/admin/general', label: 'General' },
                 { path: '/admin/appearance', label: 'Aspect' },
@@ -81,112 +82,132 @@ const AdminNavbar: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Sidebar */}
-            <aside
-                className={`fixed top-0 left-0 z-40 h-screen transition-transform ${
-                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                } bg-slate-800 text-white w-64 p-4`}
+            <Drawer
+                variant="permanent"
+                open={isSidebarOpen}
+                sx={{
+                    width: 240,
+                    flexShrink: 0,
+                    '& .MuiDrawer-paper': {
+                        width: 240,
+                        boxSizing: 'border-box',
+                        backgroundColor: '#1e293b',
+                        color: 'white'
+                    },
+                }}
             >
-                <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-xl font-bold">Webarca Admin</h1>
-                    <button
+                <Toolbar sx={{ justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                    <Typography variant="h6" component="div">
+                        Webarca Admin
+                    </Typography>
+                    <IconButton
+                        color="inherit"
                         onClick={() => setIsSidebarOpen(false)}
-                        className="lg:hidden"
+                        sx={{ display: { lg: 'none' } }}
                     >
-                        <X size={24} />
-                    </button>
-                </div>
+                        <Close />
+                    </IconButton>
+                </Toolbar>
 
-                <nav className="space-y-1">
+                <List>
                     {menuItems.map((item) => (
-                        <div key={item.id}>
+                        <React.Fragment key={item.id}>
                             {item.submenu ? (
-                                <div className="space-y-1">
-                                    <button
+                                <>
+                                    <ListItemButton
                                         onClick={() => toggleMenu(item.id)}
-                                        className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-colors ${
-                                            isActiveMenu(item)
-                                                ? 'bg-teal-500 text-white'
-                                                : 'hover:bg-slate-700'
-                                        }`}
+                                        selected={isActiveMenu(item)}
+                                        sx={{
+                                            '&.Mui-selected': {
+                                                backgroundColor: '#0CB4AA',
+                                                '&:hover': {
+                                                    backgroundColor: '#0a8f87'
+                                                }
+                                            }
+                                        }}
                                     >
-                                        <div className="flex items-center space-x-3">
+                                        <ListItemIcon sx={{ color: 'inherit' }}>
                                             {item.icon}
-                                            <span>{item.label}</span>
-                                        </div>
-                                        <ChevronDown
-                                            size={16}
-                                            className={`transform transition-transform ${
-                                                isMenuExpanded(item.id) ? 'rotate-180' : ''
-                                            }`}
+                                        </ListItemIcon>
+                                        <ListItemText primary={item.label} />
+                                        <ExpandMore
+                                            sx={{
+                                                transform: isMenuExpanded(item.id) ? 'rotate(180deg)' : 'rotate(0)',
+                                                transition: '0.2s'
+                                            }}
                                         />
-                                    </button>
-                                    <div
-                                        className={`space-y-1 overflow-hidden transition-all duration-200 ${
-                                            isMenuExpanded(item.id)
-                                                ? 'max-h-96 opacity-100'
-                                                : 'max-h-0 opacity-0'
-                                        }`}
-                                    >
-                                        {item.submenu.map((subItem) => (
-                                            <Link
-                                                key={subItem.path}
-                                                to={subItem.path}
-                                                className={`flex items-center pl-12 pr-4 py-2 rounded-lg transition-colors ${
-                                                    isActivePath(subItem.path)
-                                                        ? 'bg-teal-500 text-white'
-                                                        : 'hover:bg-slate-700'
-                                                }`}
-                                            >
-                                                {subItem.label}
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
+                                    </ListItemButton>
+                                    <Collapse in={isMenuExpanded(item.id)} timeout="auto" unmountOnExit>
+                                        <List component="div" disablePadding>
+                                            {item.submenu.map((subItem) => (
+                                                <ListItemButton
+                                                    key={subItem.path}
+                                                    component={Link}
+                                                    to={subItem.path}
+                                                    selected={isActivePath(subItem.path)}
+                                                    sx={{
+                                                        pl: 4,
+                                                        '&.Mui-selected': {
+                                                            backgroundColor: '#0CB4AA',
+                                                            '&:hover': {
+                                                                backgroundColor: '#0a8f87'
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    <ListItemText primary={subItem.label} />
+                                                </ListItemButton>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                </>
                             ) : (
-                                <Link
+                                <ListItemButton
+                                    component={Link}
                                     to={item.path}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                                        isActivePath(item.path)
-                                            ? 'bg-teal-500 text-white'
-                                            : 'hover:bg-slate-700'
-                                    }`}
+                                    selected={isActivePath(item.path)}
+                                    sx={{
+                                        '&.Mui-selected': {
+                                            backgroundColor: '#0CB4AA',
+                                            '&:hover': {
+                                                backgroundColor: '#0a8f87'
+                                            }
+                                        }
+                                    }}
                                 >
-                                    {item.icon}
-                                    <span>{item.label}</span>
-                                </Link>
+                                    <ListItemIcon sx={{ color: 'inherit' }}>
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.label} />
+                                </ListItemButton>
                             )}
-                        </div>
+                        </React.Fragment>
                     ))}
-                </nav>
-            </aside>
+                </List>
+            </Drawer>
 
-            {/* Main content */}
-            <div className={`${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-                <header className="bg-white shadow-sm">
-                    <div className="flex items-center justify-between p-4">
-                        <div className="flex items-center">
-                            <button
-                                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                                className="lg:hidden mr-4"
-                            >
-                                <Menu size={24} />
-                            </button>
-                            <div className="text-xl font-semibold">
-                                {menuItems.find(item => isActiveMenu(item))?.label || 'Dashboard'}
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4">
-                            <button className="p-2 hover:bg-gray-100 rounded-full">
-                                <Bell size={20} />
-                            </button>
-                            <button className="p-2 hover:bg-gray-100 rounded-full">
-                                <HelpCircle size={20} />
-                            </button>
-                        </div>
-                    </div>
-                </header>
+            <div className={`${isSidebarOpen ? 'lg:ml-60' : ''}`}>
+                <AppBar position="static" color="default" elevation={1}>
+                    <Toolbar>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            sx={{ mr: 2, display: { lg: 'none' } }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                            {menuItems.find(item => isActiveMenu(item))?.label || 'Dashboard'}
+                        </Typography>
+                        <IconButton color="inherit">
+                            <Notifications />
+                        </IconButton>
+                        <IconButton color="inherit">
+                            <Help />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
 
                 <main className="p-4">
                     <Outlet />
