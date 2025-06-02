@@ -16,7 +16,6 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import AdminPortfolio from './admin/AdminPortfolio';
 import AdminTestimonials from './admin/AdminTestimonials';
-import AdminLogin from "./admin/AdminLogin.tsx";
 import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminUserCreate from "./admin/AdminUserCreate.tsx";
 import AdminUserEdit from "./admin/AdminUserEdit.tsx";
@@ -48,8 +47,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/services/:slug" element={<ServicePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="zjadminwebarcats/login" element={<AdminLogin />} />
+          <Route path="zjadminwebarcats/login" element={<LoginPage />} />
 
             {/* Admin Routes */}
               <Route path="/zjadminwebarcats" element={<PrivateRoute />}>

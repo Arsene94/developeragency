@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import Logo from '../components/Logo';
+import {useAuth} from "../context/AuthContext.tsx";
 
 const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,13 +10,14 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('http://localhost:5001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -27,8 +29,9 @@ const LoginPage: React.FC = () => {
 
       const data = await response.json();
       localStorage.setItem('token', data.token);
-      navigate('/dashboard');
-    } catch (err) {
+      login(data.token);
+      navigate('/zjadminwebarcats');
+    } catch {
       setError('Email sau parolă incorectă');
     }
   };
