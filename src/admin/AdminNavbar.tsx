@@ -3,8 +3,6 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     FileText,
-    Image,
-    MessageSquare,
     Menu,
     X,
     ChevronDown,
@@ -22,7 +20,7 @@ const AdminNavbar: React.FC = () => {
     const menuItems = [
         {
             id: 'dashboard',
-            path: '/admin',
+            path: '/zjadminwebarcats',
             icon: <LayoutDashboard size={20} />,
             label: 'Dashboard'
         },
@@ -31,9 +29,9 @@ const AdminNavbar: React.FC = () => {
             label: 'Conținut',
             icon: <FileText size={20} />,
             submenu: [
-                { path: '/admin/services', label: 'Servicii' },
-                { path: '/admin/portfolio', label: 'Portofoliu' },
-                { path: '/admin/testimonials', label: 'Testimoniale' }
+                { path: '/zjadminwebarcats/services', label: 'Servicii' },
+                { path: '/zjadminwebarcats/portfolio', label: 'Portofoliu' },
+                { path: '/zjadminwebarcats/testimonials', label: 'Testimoniale' }
             ]
         },
         {
@@ -41,8 +39,8 @@ const AdminNavbar: React.FC = () => {
             label: 'Utilizatori',
             icon: <Users size={20} />,
             submenu: [
-                { path: '/admin/users', label: 'Toți Utilizatorii' },
-                { path: '/admin/roles', label: 'Roluri' }
+                { path: '/zjadminwebarcats/users', label: 'Toți Utilizatorii' },
+                { path: '/zjadminwebarcats/roles', label: 'Roluri' }
             ]
         },
         {
@@ -50,9 +48,9 @@ const AdminNavbar: React.FC = () => {
             label: 'Setări',
             icon: <Settings size={20} />,
             submenu: [
-                { path: '/admin/general', label: 'General' },
-                { path: '/admin/appearance', label: 'Aspect' },
-                { path: '/admin/security', label: 'Securitate' }
+                { path: '/zjadminwebarcats/general', label: 'General' },
+                { path: '/zjadminwebarcats/appearance', label: 'Aspect' },
+                { path: '/zjadminwebarcats/security', label: 'Securitate' }
             ]
         }
     ];
