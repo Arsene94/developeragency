@@ -14,6 +14,7 @@ interface Project {
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const projectsPerPage = 6;
   const projects: Project[] = [
     {
@@ -109,17 +110,6 @@ const Portfolio: React.FC = () => {
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
   const portfolioRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      requestAnimationFrame(() => {
-        portfolioRef.current?.scrollIntoView({ behavior: 'smooth' });
-      });
-    }, 50); // Small delay helps rendering settle
-
-    return () => clearTimeout(timeout);
-  }, [currentPage]);
-
-
   const categories = [
     { value: 'all', label: 'Toate' },
     { value: 'e-commerce', label: 'E-commerce' },
@@ -130,10 +120,20 @@ const Portfolio: React.FC = () => {
   ];
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    // Smooth scroll to top of portfolio section
-    document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+    if (pageNumber === currentPage || pageNumber < 1 || pageNumber > totalPages) return;
+
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentPage(pageNumber);
+      setIsTransitioning(false);
+      // Scroll after fade-in starts:
+      if (portfolioRef.current) {
+        portfolioRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300); // duration of fade-out in ms
   };
+
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
@@ -167,7 +167,7 @@ const Portfolio: React.FC = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade ${isTransitioning ? 'fade-out' : ''}`}>
             {currentProjects.map((project) => (
                 <div
                     key={project.id}
@@ -212,12 +212,13 @@ const Portfolio: React.FC = () => {
           {totalPages > 1 && (
               <div className="mt-12 flex justify-center items-center space-x-2">
                 <button
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={e => {
+                      handlePageChange(currentPage - 1);
+                      (e.currentTarget as HTMLElement).blur();
+                    }}
                     disabled={currentPage === 1}
                     className={`p-2 rounded-md ${
-                        currentPage === 1
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-gray-600 hover:bg-gray-100'
+                        currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                 >
                   <ChevronLeft size={20} />
@@ -226,11 +227,12 @@ const Portfolio: React.FC = () => {
                 {[...Array(totalPages)].map((_, index) => (
                     <button
                         key={index}
-                        onClick={() => handlePageChange(index + 1)}
+                        onClick={e => {
+                          handlePageChange(index + 1);
+                          (e.currentTarget as HTMLElement).blur();
+                        }}
                         className={`w-10 h-10 rounded-md ${
-                            currentPage === index + 1
-                                ? 'bg-teal-500 text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
+                            currentPage === index + 1 ? 'bg-teal-500 text-white' : 'text-gray-600 hover:bg-gray-100'
                         }`}
                     >
                       {index + 1}
@@ -238,16 +240,18 @@ const Portfolio: React.FC = () => {
                 ))}
 
                 <button
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={e => {
+                      handlePageChange(currentPage + 1);
+                      (e.currentTarget as HTMLElement).blur();
+                    }}
                     disabled={currentPage === totalPages}
                     className={`p-2 rounded-md ${
-                        currentPage === totalPages
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-gray-600 hover:bg-gray-100'
+                        currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                 >
                   <ChevronRight size={20} />
                 </button>
+
               </div>
           )}
       </div>
