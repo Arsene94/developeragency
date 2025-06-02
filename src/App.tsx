@@ -21,9 +21,6 @@ import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminUserCreate from "./admin/AdminUserCreate.tsx";
 import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 import PrivateRoute from "./context/PrivateRoute.tsx";
-import AdminUsers from "./admin/AdminUsers.tsx";
-import AdminUserCreate from "./admin/AdminUserCreate.tsx";
-import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 
 function HomePage() {
   return (
@@ -54,7 +51,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="zjadminwebarcats/login" element={<AdminLogin />} />
 
-<<<<<<< HEAD
             {/* Admin Routes */}
               <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
                   <Route element={<AdminNavbar />}>
@@ -71,24 +67,6 @@ function App() {
           <Footer />
         </div>
       </Router>
-=======
-          {/* Admin Routes */}
-          <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
-            <Route element={<AdminNavbar />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="services" element={<AdminServices />} />
-              <Route path="portfolio" element={<AdminPortfolio />} />
-              <Route path="testimonials" element={<AdminTestimonials />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="users/create" element={<AdminUserCreate />} />
-              <Route path="users/edit/:id" element={<AdminUserEdit />} />
-            </Route>
-          </Route>
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
->>>>>>> 9a3dbce0d1158c13dd344f8251aa4f03f54e442c
   );
 }
 
