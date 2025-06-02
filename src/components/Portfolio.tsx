@@ -238,48 +238,6 @@ const Portfolio: React.FC = () => {
                 </button>
               </div>
           )}
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-12 flex justify-center items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`p-2 rounded-md ${
-                currentPage === 1
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`w-10 h-10 rounded-md ${
-                  currentPage === index + 1
-                    ? 'bg-teal-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`p-2 rounded-md ${
-                currentPage === totalPages
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );
