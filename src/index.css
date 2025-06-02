@@ -194,3 +194,12 @@ canvas {
     }
   }
 }
+
+.fade {
+  transition: opacity 300ms ease-in-out;
+  opacity: 1;
+}
+
+.fade.fade-out {
+  opacity: 0;
+}

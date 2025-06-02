@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Project {
@@ -14,6 +14,7 @@ interface Project {
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const projectsPerPage = 6;
   const projects: Project[] = [
     {
@@ -107,6 +108,7 @@ const Portfolio: React.FC = () => {
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  const portfolioRef = useRef<HTMLElement | null>(null);
 
   const categories = [
     { value: 'all', label: 'Toate' },
@@ -118,18 +120,28 @@ const Portfolio: React.FC = () => {
   ];
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    // Smooth scroll to top of portfolio section
-    document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
+    if (pageNumber === currentPage || pageNumber < 1 || pageNumber > totalPages) return;
+
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+      setCurrentPage(pageNumber);
+      setIsTransitioning(false);
+      // Scroll after fade-in starts:
+      if (portfolioRef.current) {
+        portfolioRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300); // duration of fade-out in ms
   };
+
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   return (
-      <section id="portfolio" className="py-20 bg-white">
+      <section id="portfolio" ref={portfolioRef} className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="text-teal-500 font-medium">PORTOFOLIU</span>
@@ -155,7 +167,7 @@ const Portfolio: React.FC = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade ${isTransitioning ? 'fade-out' : ''}`}>
             {currentProjects.map((project) => (
                 <div
                     key={project.id}
@@ -200,12 +212,13 @@ const Portfolio: React.FC = () => {
           {totalPages > 1 && (
               <div className="mt-12 flex justify-center items-center space-x-2">
                 <button
-                    onClick={() => handlePageChange(currentPage - 1)}
+                    onClick={e => {
+                      handlePageChange(currentPage - 1);
+                      (e.currentTarget as HTMLElement).blur();
+                    }}
                     disabled={currentPage === 1}
                     className={`p-2 rounded-md ${
-                        currentPage === 1
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-gray-600 hover:bg-gray-100'
+                        currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                 >
                   <ChevronLeft size={20} />
@@ -214,11 +227,12 @@ const Portfolio: React.FC = () => {
                 {[...Array(totalPages)].map((_, index) => (
                     <button
                         key={index}
-                        onClick={() => handlePageChange(index + 1)}
+                        onClick={e => {
+                          handlePageChange(index + 1);
+                          (e.currentTarget as HTMLElement).blur();
+                        }}
                         className={`w-10 h-10 rounded-md ${
-                            currentPage === index + 1
-                                ? 'bg-teal-500 text-white'
-                                : 'text-gray-600 hover:bg-gray-100'
+                            currentPage === index + 1 ? 'bg-teal-500 text-white' : 'text-gray-600 hover:bg-gray-100'
                         }`}
                     >
                       {index + 1}
@@ -226,62 +240,22 @@ const Portfolio: React.FC = () => {
                 ))}
 
                 <button
-                    onClick={() => handlePageChange(currentPage + 1)}
+                    onClick={e => {
+                      handlePageChange(currentPage + 1);
+                      (e.currentTarget as HTMLElement).blur();
+                    }}
                     disabled={currentPage === totalPages}
                     className={`p-2 rounded-md ${
-                        currentPage === totalPages
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-gray-600 hover:bg-gray-100'
+                        currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                 >
                   <ChevronRight size={20} />
                 </button>
+
               </div>
           )}
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-12 flex justify-center items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`p-2 rounded-md ${
-                currentPage === 1
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => handlePageChange(index + 1)}
-                className={`w-10 h-10 rounded-md ${
-                  currentPage === index + 1
-                    ? 'bg-teal-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`p-2 rounded-md ${
-                currentPage === totalPages
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        )}
-      </div>
-    </section>
+        </div>
+      </section>
   );
 };
 
