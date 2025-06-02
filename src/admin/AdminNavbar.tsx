@@ -10,7 +10,6 @@ import {
   Settings,
   Bell,
   HelpCircle,
-  Shield
 } from 'lucide-react';
 
 interface MenuItem {
@@ -127,9 +126,7 @@ const AdminNavbar: React.FC = () => {
                   </button>
                   <div
                     className={`space-y-1 overflow-hidden transition-all duration-200 ${
-                      isMenuExpande
-
-d(item.id)
+                      isMenuExpanded(item.id)
                         ? 'max-h-96 opacity-100'
                         : 'max-h-0 opacity-0'
                     }`}
