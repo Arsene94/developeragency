@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Project {
@@ -107,6 +107,18 @@ const Portfolio: React.FC = () => {
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
   const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  const portfolioRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (portfolioRef.current) {
+        portfolioRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [currentPage]);
+
 
   const categories = [
     { value: 'all', label: 'Toate' },
@@ -125,11 +137,11 @@ const Portfolio: React.FC = () => {
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
-    setCurrentPage(1); // Reset to first page when filter changes
+    setCurrentPage(1);
   };
 
   return (
-      <section id="portfolio" className="py-20 bg-white">
+      <section id="portfolio" ref={portfolioRef} className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="text-teal-500 font-medium">PORTOFOLIU</span>
