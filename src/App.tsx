@@ -10,12 +10,16 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ServicePage from './pages/ServicePage';
+import LoginPage from './pages/LoginPage';
 import AdminNavbar from './admin/AdminNavbar.tsx';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import AdminPortfolio from './admin/AdminPortfolio';
 import AdminTestimonials from './admin/AdminTestimonials';
 import AdminLogin from "./admin/AdminLogin.tsx";
+import AdminUsers from "./admin/AdminUsers.tsx";
+import AdminUserCreate from "./admin/AdminUserCreate.tsx";
+import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 import PrivateRoute from "./context/PrivateRoute.tsx";
 import AdminUsers from "./admin/AdminUsers.tsx";
 import AdminUserCreate from "./admin/AdminUserCreate.tsx";
@@ -23,32 +27,34 @@ import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 
 function HomePage() {
   return (
-      <>
-        <Navbar />
-        <main>
-          <Hero />
-          <Services />
-          <Technologies />
-          <Portfolio />
-          <Process />
-          <Pricing />
-          <Testimonials />
-          <Contact />
-        </main>
-      </>
+    <>
+      <Navbar />
+      <main>
+        <Hero />
+        <Services />
+        <Technologies />
+        <Portfolio />
+        <Process />
+        <Pricing />
+        <Testimonials />
+        <Contact />
+      </main>
+    </>
   );
 }
 
 function App() {
   return (
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/services/:slug" element={<ServicePage />} />
-            <Route path="zjadminwebarcats/login" element={<AdminLogin />} />
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/services/:slug" element={<ServicePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="zjadminwebarcats/login" element={<AdminLogin />} />
 
+<<<<<<< HEAD
             {/* Admin Routes */}
               <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
                   <Route element={<AdminNavbar />}>
@@ -65,6 +71,24 @@ function App() {
           <Footer />
         </div>
       </Router>
+=======
+          {/* Admin Routes */}
+          <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
+            <Route element={<AdminNavbar />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="portfolio" element={<AdminPortfolio />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/create" element={<AdminUserCreate />} />
+              <Route path="users/edit/:id" element={<AdminUserEdit />} />
+            </Route>
+          </Route>
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
+>>>>>>> 9a3dbce0d1158c13dd344f8251aa4f03f54e442c
   );
 }
 

@@ -12,6 +12,11 @@ import {
     HelpCircle
 } from 'lucide-react';
 
+interface MenuItem {
+    path?: string;
+    submenu?: MenuItem[];
+}
+
 const AdminNavbar: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
     const [expandedMenus, setExpandedMenus] = React.useState<string[]>([]);
@@ -67,15 +72,16 @@ const AdminNavbar: React.FC = () => {
 
     const isActivePath = (path: string) => location.pathname === path;
 
-    const isActiveMenu = (item: any) => {
+    const isActiveMenu = (item: MenuItem): boolean => {
         if (item.path) {
             return isActivePath(item.path);
         }
         if (item.submenu) {
-            return item.submenu.some((subItem: any) => isActivePath(subItem.path));
+            return item.submenu.some((subItem: MenuItem) => isActivePath(subItem.path ?? ''));
         }
         return false;
     };
+
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -174,7 +180,6 @@ const AdminNavbar: React.FC = () => {
                                 {menuItems.find(item => isActiveMenu(item))?.label || 'Dashboard'}
                             </div>
                         </div>
-
                         <div className="flex items-center space-x-4">
                             <button className="p-2 hover:bg-gray-100 rounded-full">
                                 <Bell size={20} />
