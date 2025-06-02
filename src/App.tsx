@@ -17,6 +17,9 @@ import AdminServices from './admin/AdminServices';
 import AdminPortfolio from './admin/AdminPortfolio';
 import AdminTestimonials from './admin/AdminTestimonials';
 import AdminLogin from "./admin/AdminLogin.tsx";
+import AdminUsers from "./admin/AdminUsers.tsx";
+import AdminUserCreate from "./admin/AdminUserCreate.tsx";
+import AdminUserEdit from "./admin/AdminUserEdit.tsx";
 import PrivateRoute from "./context/PrivateRoute.tsx";
 
 function HomePage() {
@@ -55,6 +58,9 @@ function App() {
               <Route path="services" element={<AdminServices />} />
               <Route path="portfolio" element={<AdminPortfolio />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="users/create" element={<AdminUserCreate />} />
+              <Route path="users/edit/:id" element={<AdminUserEdit />} />
             </Route>
           </Route>
         </Routes>
@@ -64,4 +70,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
