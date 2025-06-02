@@ -111,10 +111,10 @@ const Portfolio: React.FC = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (portfolioRef.current) {
-        portfolioRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
+      requestAnimationFrame(() => {
+        portfolioRef.current?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }, 50); // Small delay helps rendering settle
 
     return () => clearTimeout(timeout);
   }, [currentPage]);
