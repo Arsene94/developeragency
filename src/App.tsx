@@ -24,6 +24,8 @@ import RolesList from "./admin/Roles/RolesList";
 import RoleCreate from "./admin/Roles/RoleCreate";
 import RoleEdit from "./admin/Roles/RoleEdit";
 import ServiceList from "./admin/Content/Services/ServiceList.tsx";
+import ServiceAdd from "./admin/Content/Services/ServiceAdd.tsx";
+import ServiceEdit from "./admin/Content/Services/ServiceEdit.tsx";
 
 function HomePage() {
   return (
@@ -57,6 +59,8 @@ function App() {
             <Route element={<AdminNavbar />}>
               <Route index element={<AdminDashboard />} />
               <Route path="content/services" element={<ServiceList />} />
+              <Route path="content/services/create" element={<ServiceAdd />} />
+              <Route path="content/services/edit/:id" element={<ServiceEdit />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="users/create" element={<AdminUserCreate />} />
               <Route path="users/edit/:id" element={<AdminUserEdit />} />
