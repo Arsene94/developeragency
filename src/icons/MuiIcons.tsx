@@ -1,15 +1,31 @@
-import React from 'react';
 import * as MuiIcons from '@mui/icons-material';
+import { SvgIconProps } from '@mui/material';
 
-// Create a map of all MUI icons
-const muiIconMap: { [key: string]: React.ReactNode } = {};
+interface MuiIconProps extends Omit<SvgIconProps, 'color' | 'fontSize'> {
+    icon: keyof typeof MuiIcons;
+    color?: string; // e.g., "#0d9488"
+    size?: 'inherit' | 'small' | 'medium' | 'large' | number | string; // e.g., 24, '2rem'
+}
 
-// Dynamically add all icons from MUI
-Object.keys(MuiIcons).forEach(iconName => {
-  const IconComponent = (MuiIcons as any)[iconName];
-  if (typeof IconComponent === 'function') {
-    muiIconMap[iconName] = <IconComponent />;
-  }
-});
+export const MuiIcon = ({ icon, color, size = 'medium', sx, ...props }: MuiIconProps) => {
+    const IconComponent = MuiIcons[icon];
 
-export { muiIconMap };
+    if (!IconComponent) {
+        console.warn(`MUI Icon "${icon}" not found.`);
+        return null;
+    }
+
+    const isNativeSize = ['inherit', 'small', 'medium', 'large'].includes(size as string);
+
+    return (
+        <IconComponent
+            {...props}
+            fontSize={isNativeSize ? (size as SvgIconProps['fontSize']) : undefined}
+            sx={{
+                color,
+                ...(isNativeSize ? {} : { fontSize: size }),
+                ...sx,
+            }}
+        />
+    );
+};

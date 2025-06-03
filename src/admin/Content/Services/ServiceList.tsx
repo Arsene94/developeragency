@@ -4,6 +4,7 @@ import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { LocationState } from '../../../types/utils';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
+import { MuiIcon } from '../../../icons/MuiIcons';
 
 interface Service {
   id: number;
@@ -152,7 +153,7 @@ const ServiceList: React.FC = () => {
           Adaugă Serviciu
         </button>
       </div>
-
+      <MuiIcon icon="AddShoppingCart" size="large" color="#0d9488" />
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 border-b">
           <div className="relative">
