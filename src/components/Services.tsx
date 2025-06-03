@@ -1,43 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Activity, Airplay, AlertCircle, AlertOctagon, AlertTriangle, AlignCenter,
-  AlignJustify, AlignLeft, AlignRight, Anchor, Aperture, Archive, ArrowDown,
-  ArrowDownCircle, ArrowDownLeft, ArrowDownRight, ArrowLeft, ArrowLeftCircle,
-  ArrowRight, ArrowRightCircle, ArrowUp, ArrowUpCircle, ArrowUpLeft,
-  ArrowUpRight, AtSign, Award, BarChart, BarChart2, Battery, BatteryCharging,
-  Bell, BellOff, Bluetooth, Bold, Book, Bookmark, Box, Briefcase, Calendar,
-  Camera, CameraOff, Cast, Check, CheckCircle, CheckSquare, ChevronDown,
-  ChevronLeft, ChevronRight, ChevronUp, ChevronsDown, ChevronsLeft,
-  ChevronsRight, ChevronsUp, Chrome, Circle, Clipboard, Clock, Cloud,
-  CloudDrizzle, CloudLightning, CloudOff, CloudRain, CloudSnow, Code, Codepen,
-  Coffee, Command, Compass, Copy, CornerDownLeft, CornerDownRight,
-  CornerLeftDown, CornerLeftUp, CornerRightDown, CornerRightUp, CornerUpLeft,
-  CornerUpRight, Cpu, CreditCard, Crop, Crosshair, Database, Delete, Disc,
-  DollarSign, Download, DownloadCloud, Droplet, Edit, Edit2, Edit3, ExternalLink,
-  Eye, EyeOff, Facebook, FastForward, Feather, File, FileCode, FileText, Film,
-  Filter, Flag, Folder, FolderMinus, FolderPlus, Framer, Frown, Gift, GitBranch,
-  GitCommit, GitMerge, GitPullRequest, Globe, Grid, HardDrive, Hash, Headphones,
-  Heart, HelpCircle, Hexagon, Home, Image, Inbox, Info, Instagram, Italic, Key,
-  Layers, Layout, LayoutGrid, LifeBuoy, Link, Link2, List, Loader, Lock,
-  LogIn, LogOut, Mail, Map, MapPin, Maximize, Maximize2, Meh, Menu, MessageCircle,
-  MessageSquare, Mic, MicOff, Minimize, Minimize2, Minus, MinusCircle,
-  MinusSquare, Monitor, Moon, MoreHorizontal, MoreVertical, Mouse, MousePointer,
-  Move, Music, Navigation, Navigation2, Octagon, Package, Paperclip, Pause,
-  PauseCircle, PenTool, Percent, Phone, PhoneCall, PhoneForwarded,
-  PhoneIncoming, PhoneMissed, PhoneOff, PhoneOutgoing, PieChart, Play,
-  PlayCircle, Plus, PlusCircle, PlusSquare, Pocket, Power, Printer, Radio,
-  RefreshCcw, RefreshCw, Repeat, Rewind, RotateCcw, RotateCw, Rss, Save,
-  Scissors, Search, Send, Server, Settings, Share, Share2, Shield, ShieldOff,
-  ShoppingBag, ShoppingCart, Shuffle, Sidebar, Skip, Slack, Slash, Sliders,
-  Smartphone, Smile, Speaker, Square, Star, StopCircle, Sun, Sunrise, Sunset,
-  Table, Tablet, Tag, Target, Terminal, Thermometer, ThumbsDown, ThumbsUp,
-  ToggleLeft, ToggleRight, Tool, Trash, Trash2, Trello, TrendingDown,
-  TrendingUp, Triangle, Truck, Tv, Twitter, Type, Umbrella, Underline, Unlock,
-  Upload, UploadCloud, User, UserCheck, UserMinus, UserPlus, UserX, Users,
-  Video, VideoOff, Voicemail, Volume, Volume1, Volume2, VolumeX, Watch, Wifi,
-  WifiOff, Wind, X, XCircle, XOctagon, XSquare, Youtube, Zap, ZapOff, Zoom,
-  ZoomIn, ZoomOut, PanelLeft, Wrench, Loader2
-} from 'lucide-react';
+import { Activity, Airplay, AlertCircle, AlertOctagon, AlertTriangle, AlignCenter, AlignJustify, AlignLeft, AlignRight, Anchor, Aperture, Archive, ArrowDown, ArrowDownCircle, ArrowDownLeft, ArrowDownRight, ArrowLeft, ArrowLeftCircle, ArrowRight, ArrowRightCircle, ArrowUp, ArrowUpCircle, ArrowUpLeft, ArrowUpRight, AtSign, Award, BarChart, BarChart2, Battery, BatteryCharging, Bell, BellOff, Bluetooth, Bold, Book, Bookmark, Box, Briefcase, Calendar, Camera, CameraOff, Cast, Check, CheckCircle, CheckSquare, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ChevronsDown, ChevronsLeft, ChevronsRight, ChevronsUp, Chrome, Circle, Clipboard, Clock, Cloud, CloudDrizzle, CloudLightning, CloudOff, CloudRain, CloudSnow, Code, Codepen, Coffee, Command, Compass, Copy, CornerDownLeft, CornerDownRight, CornerLeftDown, CornerLeftUp, CornerRightDown, CornerRightUp, CornerUpLeft, CornerUpRight, Cpu, CreditCard, Crop, Crosshair, Database, Delete, Disc, DollarSign, Download, DownloadCloud, Droplet, Edit, Edit2, Edit3, ExternalLink, Eye, EyeOff, Facebook, FastForward, Feather, File, FileCode, FileText, Film, Filter, Flag, Folder, FolderMinus, FolderPlus, Framer, Frown, Gift, GitBranch, GitCommit, GitMerge, GitPullRequest, Globe, Grid, HardDrive, Hash, Headphones, Heart, HelpCircle, Hexagon, Home, Image, Inbox, Info, Instagram, Italic, Key, Layers, Layout, LayoutGrid, LifeBuoy, Link, Link2, List, Loader, Lock, LogIn, LogOut, Mail, Map, MapPin, Maximize, Maximize2, Meh, Menu, MessageCircle, MessageSquare, Mic, MicOff, Minimize, Minimize2, Minus, MinusCircle, MinusSquare, Monitor, Moon, MoreHorizontal, MoreVertical, Mouse, MousePointer, Move, Music, Navigation, Navigation2, Octagon, Package, Paperclip, Pause, PauseCircle, PenTool, Percent, Phone, PhoneCall, PhoneForwarded, PhoneIncoming, PhoneMissed, PhoneOff, PhoneOutgoing, PieChart, Play, PlayCircle, Plus, PlusCircle, PlusSquare, Pocket, Power, Printer, Radio, RefreshCcw, RefreshCw, Repeat, Rewind, RotateCcw, RotateCw, Rss, Save, Scissors, Search, Send, Server, Settings, Share, Share2, Shield, ShieldOff, ShoppingBag, ShoppingCart, Shuffle, Sidebar, SkipBack as Skip, Slack, Slash, Sliders, Smartphone, Smile, Speaker, Square, Star, StopCircle, Sun, Sunrise, Sunset, Table, Tablet, Tag, Target, Terminal, Thermometer, ThumbsDown, ThumbsUp, ToggleLeft, ToggleRight, PenTool as Tool, Trash, Trash2, Trello, TrendingDown, TrendingUp, Triangle, Truck, Tv, Twitter, Type, Umbrella, Underline, Unlock, Upload, UploadCloud, User, UserCheck, UserMinus, UserPlus, UserX, Users, Video, VideoOff, Voicemail, Volume, Volume1, Volume2, VolumeX, Watch, Wifi, WifiOff, Wind, X, XCircle, XOctagon, XSquare, Youtube, Zap, ZapOff, ZoomIn as Zoom, ZoomIn, ZoomOut, PanelLeft, Wrench, Loader2 } from 'lucide-react';
 
 interface Service {
   id: number;
