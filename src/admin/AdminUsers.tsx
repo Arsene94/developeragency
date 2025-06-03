@@ -71,7 +71,6 @@ const AdminUsers: React.FC = () => {
     const handleDelete = (userId: number) => {
         if (window.confirm('Ești sigur că vrei să ștergi acest utilizator?')) {
            try {
-
                setOpenSuccesDelete(true);
                setUsers((prev) => prev.filter((role) => role.id !== userId));
            } catch (err) {
@@ -89,7 +88,7 @@ const AdminUsers: React.FC = () => {
 
     if (loading) return <div className="p-6">Se încarcă rolurile...</div>;
     if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
-console.log(users)
+
     return (
         <div className="p-6">
             <Snackbar
