@@ -119,7 +119,9 @@ const RoleEdit: React.FC = () => {
         throw new Error(`Failed to save role: ${response.statusText}`);
       }
 
-      navigate('/zjadminwebarcats/roles');
+      navigate('/zjadminwebarcats/roles', {
+        state: { successMessage: `Rolul ${formData.name} a fost modificat cu succes!` },
+      });
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('A apărut o eroare la salvarea rolului.');

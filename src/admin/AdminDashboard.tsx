@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, FileText, Image, MessageSquare } from 'lucide-react';
+import {useAuth} from "../context/AuthContext.tsx";
 
 const AdminDashboard: React.FC = () => {
     const stats = [
@@ -8,7 +9,9 @@ const AdminDashboard: React.FC = () => {
         { title: 'Testimoniale', value: '12', icon: <MessageSquare size={24} />, color: 'bg-purple-500' },
         { title: 'Clienți Activi', value: '45', icon: <Users size={24} />, color: 'bg-yellow-500' },
     ];
+    const { user } = useAuth();
 
+    console.log(user);
     return (
         <main>
             <div className="space-y-6">

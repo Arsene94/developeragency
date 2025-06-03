@@ -92,8 +92,9 @@ const RoleCreate: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Rolul a fost creat cu succes!');
-        navigate('/zjadminwebarcats/roles');
+        navigate('/zjadminwebarcats/roles', {
+          state: { successMessage: `Rolul ${formData.name} a fost creat cu succes!` },
+        });
       } else {
         alert(data.error || 'Eroare la crearea rolului.');
       }

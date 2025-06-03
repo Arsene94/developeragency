@@ -22,7 +22,6 @@ const LoginPage: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      console.log('x')
 
       if (!response.ok) {
         throw new Error('Credențiale invalide');

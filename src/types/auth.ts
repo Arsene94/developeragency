@@ -10,7 +10,6 @@ export interface Role {
   name: string;
   description: string;
   permissions: string[];
-  created_at: string;
   updated_at: string;
 }
 
@@ -19,6 +18,17 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  status: 'active' | 'inactive';
+  last_login: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Users {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
   status: 'active' | 'inactive';
   last_login: string;
   created_at: string;

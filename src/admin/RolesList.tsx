@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useLocation, Location, useNavigate} from 'react-router-dom';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import type { Role } from '../types/auth';
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
+import {Alert} from "@mui/material";
+import {LocationState} from "../types/utils.tsx";
 
 const RolesList: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +13,10 @@ const RolesList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const token = localStorage.getItem('userToken');
+  const [openSuccesDelete, setOpenSuccesDelete] = React.useState(false);
+  const location = useLocation() as Location & { state: LocationState };
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -37,6 +44,24 @@ const RolesList: React.FC = () => {
     fetchRoles();
   }, [token]);
 
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSnackbarMessage(location.state.successMessage);
+      setSnackbarOpen(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  const handleCloseSuccessDelete = (
+      _event?: React.SyntheticEvent | Event,
+      reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSuccesDelete(false);
+  };
   const handleDelete = async (roleId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest rol?')) {
       try {
@@ -55,7 +80,7 @@ const RolesList: React.FC = () => {
           return;
         }
 
-        alert('Rolul a fost șters cu succes.');
+        setOpenSuccesDelete(true);
         setRoles((prev) => prev.filter((role) => role.id !== roleId));
       } catch (err) {
         console.error('Eroare la ștergere:', err);
@@ -74,6 +99,32 @@ const RolesList: React.FC = () => {
 
   return (
       <div className="p-6">
+        <Snackbar
+            open={openSuccesDelete}
+            autoHideDuration={5000}
+            onClose={handleCloseSuccessDelete}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+              onClose={handleCloseSuccessDelete}
+              severity="success"
+              variant="filled"
+              sx={{ width: '100%' }}
+          >
+            Rolul a fost sters cu succes!
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={5000}
+            onClose={() => setSnackbarOpen(false)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Gestionare Roluri</h2>
           <button
