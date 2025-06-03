@@ -8,9 +8,9 @@ import { Alert } from '@mui/material';
 interface Service {
   id: number;
   title: string;
+  short_description: string;
   description: string;
   icon: string;
-  features: string[];
   status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
@@ -36,7 +36,7 @@ const ServiceList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:5002/api/services/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`http://localhost:5002/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),

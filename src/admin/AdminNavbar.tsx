@@ -34,7 +34,7 @@ const AdminNavbar: React.FC = () => {
       label: 'Conținut',
       icon: <FileText size={20} />,
       submenu: [
-        { path: '/zjadminwebarcats/services', label: 'Servicii' },
+        { path: '/zjadminwebarcats/content/services', label: 'Servicii' },
         { path: '/zjadminwebarcats/portfolio', label: 'Portofoliu' },
         { path: '/zjadminwebarcats/testimonials', label: 'Testimoniale' }
       ]
