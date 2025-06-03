@@ -16,13 +16,14 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import AdminPortfolio from './admin/AdminPortfolio';
 import AdminTestimonials from './admin/AdminTestimonials';
-import AdminUsers from "./admin/AdminUsers.tsx";
-import AdminUserCreate from "./admin/AdminUserCreate.tsx";
-import AdminUserEdit from "./admin/AdminUserEdit.tsx";
+import AdminUsers from "./admin/Users/AdminUsers.tsx";
+import AdminUserCreate from "./admin/Users/AdminUserCreate.tsx";
+import AdminUserEdit from "./admin/Users/AdminUserEdit.tsx";
 import PrivateRoute from "./context/PrivateRoute.tsx";
-import RolesList from "./admin/RolesList";
-import RoleCreate from "./admin/RoleCreate";
-import RoleEdit from "./admin/RoleEdit";
+import RolesList from "./admin/Roles/RolesList";
+import RoleCreate from "./admin/Roles/RoleCreate";
+import RoleEdit from "./admin/Roles/RoleEdit";
+import ServiceList from "./admin/Content/Services/ServiceList.tsx";
 
 function HomePage() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="/zjadminwebarcats" element={<PrivateRoute />}>
             <Route element={<AdminNavbar />}>
               <Route index element={<AdminDashboard />} />
+              <Route path="content/services" element={<ServiceList />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="users/create" element={<AdminUserCreate />} />
               <Route path="users/edit/:id" element={<AdminUserEdit />} />

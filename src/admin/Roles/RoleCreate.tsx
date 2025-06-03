@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
-import type { Permission } from '../types/auth';
+import type { Permission } from '../../types/auth';
 
 const RoleCreate: React.FC = () => {
   const navigate = useNavigate();

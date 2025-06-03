@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
-import type {Role} from "../types/auth.ts";
+import type {Role} from "../../types/auth.ts";
 
 const AdminUserCreate: React.FC = () => {
     const navigate = useNavigate();
@@ -30,6 +30,7 @@ const AdminUserCreate: React.FC = () => {
                     throw new Error('Failed to fetch roles');
                 }
                 const data = await response.json();
+
                 setRoleList(data.roles || []);
             } catch (err) {
                 console.error('Error submitting form:', err);
@@ -39,6 +40,12 @@ const AdminUserCreate: React.FC = () => {
         fetchRoles();
     }, [token]);
 
+    useEffect(() => {
+        setFormData((prev) => ({
+            ...prev,
+            status: 'active',
+        }));
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,11 +77,13 @@ const AdminUserCreate: React.FC = () => {
 
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -153,7 +162,7 @@ const AdminUserCreate: React.FC = () => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             >
-                                <option>--- Selecteaza un utilizator ---</option>
+                                <option value="">--- Selecteaza un rol ---</option>
                                 {roleList.map((role) => (
                                     <option value={role.id} key={role.id}>{role.name}</option>
                                 ))}
@@ -173,6 +182,7 @@ const AdminUserCreate: React.FC = () => {
                                 <option value="active">Activ</option>
                                 <option value="inactive">Inactiv</option>
                             </select>
+
                         </div>
                     </div>
 

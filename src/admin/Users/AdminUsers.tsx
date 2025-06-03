@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Location, useLocation, useNavigate} from 'react-router-dom';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
-import type {Users} from "../types/auth.ts";
-import {LocationState} from "../types/utils.tsx";
+import { Plus, Pencil, Trash2, Search, KeyRound } from 'lucide-react';
+import type {Users} from "../../types/auth.ts";
+import {LocationState} from "../../types/utils.tsx";
 import Snackbar, {SnackbarCloseReason} from "@mui/material/Snackbar";
 import {Alert} from "@mui/material";
 
@@ -73,6 +73,10 @@ const AdminUsers: React.FC = () => {
 
         setOpenSuccesDelete(false);
     };
+
+    const handlePwdReset = async (userId: number) => {
+        console.log(userId);
+    }
 
     const handleDelete = async (userId: number) => {
         if (window.confirm('Ești sigur că vrei să ștergi acest utilizator?')) {
@@ -240,6 +244,12 @@ const AdminUsers: React.FC = () => {
                                             className="text-blue-600 hover:text-blue-900 mr-3"
                                         >
                                             <Pencil size={18}/>
+                                        </button>
+                                        <button
+                                            onClick={() => handlePwdReset(user.id)}
+                                            className="text-green-600 hover:text-green-900 mr-3"
+                                        >
+                                            <KeyRound size={18}/>
                                         </button>
                                         <button
                                             onClick={() => handleDelete(user.id)}

@@ -1,33 +1,114 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
+import type {Role, User} from "../../types/auth.ts";
 
 const AdminUserEdit: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [loadingUser, setLoadingUser] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [roleList, setRoleList] = useState<Role[]>([]);
+    const token = localStorage.getItem('userToken');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        role: '',
-        status: ''
+        role: 0,
+        status: 'active'
     });
 
     useEffect(() => {
-        // Simulate fetching user data
-        // In a real application, you would fetch the user data from your API
-        setFormData({
-            name: 'John Doe',
-            email: 'john@example.com',
-            role: 'editor',
-            status: 'active'
-        });
+        async function fetchUser() {
+            setLoadingUser(true);
+            setError(null);
+            try {
+                const response = await fetch(`http://localhost:5002/api/user/get/${id}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? {Authorization: `Bearer ${token}`} : {}),
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                const data: User = result;
+
+                setFormData(prev => ({
+                    ...prev,
+                    name: data.name,
+                    email: data.email,
+                    role: data.role.id,
+                    status: data.status
+                }));
+
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Failed to load user');
+                }
+            } finally {
+                setLoadingUser(false);
+            }
+        };
+
+        fetchUser()
     }, [id]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchRoles = async () => {
+            try {
+                const response = await fetch('http://localhost:5002/api/role/all', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch roles');
+                }
+                setRoleList(data.roles || []);
+            } catch (err) {
+                console.error('Error submitting form:', err);
+            }
+        };
+
+        fetchRoles();
+    }, [formData.name, navigate, token]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Form submitted:', formData);
-        navigate('/zjadminwebarcats/users');
+
+        try {
+            const token = localStorage.getItem('userToken');
+            const response = await fetch(`http://localhost:5002/api/user/put/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                navigate('/zjadminwebarcats/users', {
+                    state: { successMessage: `Utilizatorul ${formData.name} a fost creat cu succes!` },
+                });
+            } else {
+                alert(data.error || 'Eroare la crearea utilizatorului.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -37,6 +118,13 @@ const AdminUserEdit: React.FC = () => {
             [name]: value
         }));
     };
+
+    if (loadingUser) {
+        return <div>Loading user...</div>;
+    }
+    if (error) {
+        return <div className="text-red-600">Error loading user: {error}</div>;
+    }
 
     return (
         <div className="p-6">
@@ -85,9 +173,10 @@ const AdminUserEdit: React.FC = () => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             >
-                                <option value="user">Utilizator</option>
-                                <option value="editor">Editor</option>
-                                <option value="admin">Administrator</option>
+                                <option>--- Selecteaza un rol ---</option>
+                                {roleList.map((role) => (
+                                    <option value={role.id} key={role.id}>{role.name}</option>
+                                ))}
                             </select>
                         </div>
 

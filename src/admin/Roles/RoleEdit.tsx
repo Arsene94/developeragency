@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
-import type { Permission } from '../types/auth';
+import type { Permission } from '../../types/auth';
 
 const RoleEdit: React.FC = () => {
   const navigate = useNavigate();
@@ -117,6 +117,16 @@ const RoleEdit: React.FC = () => {
 
       if (!response.ok) {
         throw new Error(`Failed to save role: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/zjadminwebarcats/roles', {
+          state: { successMessage: `Rolul ${formData.name} a fost modificat cu succes!` },
+        });
+      } else {
+        alert(data.error || 'Eroare la crearea utilizatorului.');
       }
 
       navigate('/zjadminwebarcats/roles', {

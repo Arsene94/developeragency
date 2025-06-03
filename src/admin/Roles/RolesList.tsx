@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {useLocation, Location, useNavigate} from 'react-router-dom';
 import { Plus, Pencil, Trash2, Search } from 'lucide-react';
-import type { Role } from '../types/auth';
+import type { Role } from '../../types/auth';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import {Alert} from "@mui/material";
-import {LocationState} from "../types/utils.tsx";
+import {LocationState} from "../../types/utils.tsx";
 
 const RolesList: React.FC = () => {
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const RolesList: React.FC = () => {
   const handleDelete = async (roleId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest rol?')) {
       try {
-        const response = await fetch(`http://localhost:5002/api/role/${roleId}`, {
+        const response = await fetch(`http://localhost:5002/api/role/delete/${roleId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
