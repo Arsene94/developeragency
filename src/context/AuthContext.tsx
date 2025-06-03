@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
     id: number;
@@ -10,7 +11,7 @@ interface AuthContextType {
     user: User | null;
     token: string | null;
     isAuthenticated: boolean;
-    login: (token: string) => void;
+    login: (token: string, remember: boolean) => void;
     logout: () => void;
 }
 
@@ -24,10 +25,14 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
+const getStoredToken = (): string | null => {
+    return localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(localStorage.getItem('userToken'));
-
+    const [token, setToken] = useState<string | null>(getStoredToken());
+    const navigate = useNavigate();
     const isAuthenticated = !!token;
 
     useEffect(() => {
@@ -46,19 +51,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } catch (err) {
                 console.error('Error fetching user:', err);
                 logout();
+                navigate('/zjadminwebarcats/login');
             }
         };
 
         fetchUser();
     }, [token]);
 
-    const login = (token: string) => {
-        localStorage.setItem('userToken', token);
+    const login = (token: string, remember: boolean) => {
+        if (remember) {
+            localStorage.setItem('userToken', token);
+        } else {
+            sessionStorage.setItem('userToken', token);
+        }
         setToken(token);
     };
 
     const logout = () => {
         localStorage.removeItem('userToken');
+        sessionStorage.removeItem('userToken');
         setToken(null);
         setUser(null);
     };

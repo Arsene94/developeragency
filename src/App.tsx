@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -44,7 +44,6 @@ function HomePage() {
 
 function App() {
   return (
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
         <Routes>
           {/* Public Routes */}
@@ -70,7 +69,6 @@ function App() {
         </Routes>
         <Footer />
       </div>
-    </Router>
   );
 }
 

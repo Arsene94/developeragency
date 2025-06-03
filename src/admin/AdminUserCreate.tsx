@@ -1,23 +1,73 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
+import type {Role} from "../types/auth.ts";
 
 const AdminUserCreate: React.FC = () => {
     const navigate = useNavigate();
+    const [roleList, setRoleList] = useState<Role[]>([]);
+    const token = localStorage.getItem('userToken');
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'user',
+        role: '',
         status: 'active'
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchRoles = async () => {
+            try {
+                const response = await fetch('http://localhost:5002/api/role/all', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch roles');
+                }
+                const data = await response.json();
+                setRoleList(data.roles || []);
+            } catch (err) {
+                console.error('Error submitting form:', err);
+            }
+        };
+
+        fetchRoles();
+    }, [token]);
+
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Form submitted:', formData);
-        navigate('/zjadminwebarcats/users');
+
+        try {
+            const response = await fetch('http://localhost:5002/api/user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, // if needed
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                navigate('/zjadminwebarcats/users', {
+                    state: { successMessage: `Utilizatorul ${formData.name} a fost creat cu succes!` },
+                });
+            } else {
+                alert(data.error || 'Eroare la crearea utilizatorului.');
+            }
+
+        } catch (err) {
+            console.error('Eroare la trimiterea formularului:', err);
+            alert('A apărut o eroare la trimiterea formularului.');
+        }
+
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -103,9 +153,10 @@ const AdminUserCreate: React.FC = () => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             >
-                                <option value="user">Utilizator</option>
-                                <option value="editor">Editor</option>
-                                <option value="admin">Administrator</option>
+                                <option>--- Selecteaza un utilizator ---</option>
+                                {roleList.map((role) => (
+                                    <option value={role.id} key={role.id}>{role.name}</option>
+                                ))}
                             </select>
                         </div>
 

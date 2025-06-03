@@ -10,6 +10,7 @@ const AdminUsers: React.FC = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [users, setUsers] = useState<Users[]>([]);
+    const [totalUsers, setTotalUsers] = useState<number>(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const token = localStorage.getItem('userToken');
@@ -21,11 +22,11 @@ const AdminUsers: React.FC = () => {
     const [totalPages, setTotalPages] = useState(1);
     const limit = 10;
 
-    const fetchUsers = async (page = 1) => {
+    const fetchUsers = async (page = 1, search = '') => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`http://localhost:5002/api/user/all?page=${page}&limit=${limit}`, {
+            const response = await fetch(`http://localhost:5002/api/user/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -36,6 +37,7 @@ const AdminUsers: React.FC = () => {
             }
             const data = await response.json();
             setUsers(data.users || []);
+            setTotalUsers(data.total);
             setTotalPages(data.totalPages || 1);
             setCurrentPage(data.page || 1);
         } catch (err) {
@@ -46,8 +48,12 @@ const AdminUsers: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchUsers(currentPage);
-    }, [token, currentPage]);
+        const delayDebounce = setTimeout(() => {
+            fetchUsers(currentPage, searchTerm);
+        }, 500);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchTerm, currentPage, token]);
 
     useEffect(() => {
         if (location.state?.successMessage) {
@@ -68,23 +74,32 @@ const AdminUsers: React.FC = () => {
         setOpenSuccesDelete(false);
     };
 
-    const handleDelete = (userId: number) => {
+    const handleDelete = async (userId: number) => {
         if (window.confirm('Ești sigur că vrei să ștergi acest utilizator?')) {
-           try {
-               setOpenSuccesDelete(true);
-               setUsers((prev) => prev.filter((role) => role.id !== userId));
-           } catch (err) {
-               console.error('Eroare la ștergere:', err);
-               alert('A apărut o eroare la ștergerea rolului.');
-           }
+            try {
+                const response = await fetch(`http://localhost:5002/api/user/delete/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert(data.error || 'Eroare la ștergerea utilizatorului.');
+                    return;
+                }
+
+                setOpenSuccesDelete(true);
+                setUsers((prev) => prev.filter((role) => role.id !== userId));
+            } catch (err) {
+                console.error('Eroare la ștergere:', err);
+                alert('A apărut o eroare la ștergerea utilizatorului.');
+            }
         }
     };
-
-    const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.role.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     if (loading) return <div className="p-6">Se încarcă rolurile...</div>;
     if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
@@ -173,7 +188,7 @@ const AdminUsers: React.FC = () => {
                         </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredUsers.map((user) => {
+                        {users.map((user) => {
                             const formattedDateLastLogin = new Intl.DateTimeFormat('ro-RO', {
                                 dateStyle: 'short',
                                 timeStyle: 'short',
@@ -189,19 +204,19 @@ const AdminUsers: React.FC = () => {
                                 timeStyle: 'short',
                             }).format(new Date(user.updated_at));
                             return (
-                            <tr key={user.id} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{user.email}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                <tr key={user.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{user.email}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                     <span
                                         className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full"
                                     >{user.role}</span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                         user.status === 'active'
                                             ? 'bg-green-100 text-green-800'
@@ -209,67 +224,86 @@ const AdminUsers: React.FC = () => {
                                     }`}>
                                       {user.status === 'active' ? 'Activ' : 'Inactiv'}
                                     </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{formattedDateLastLogin}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{formattedDateCreated}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{formattedDateUpdated}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button
-                                        onClick={() => navigate(`edit/${user.id}`)}
-                                        className="text-blue-600 hover:text-blue-900 mr-3"
-                                    >
-                                        <Pencil size={18}/>
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(user.id)}
-                                        className="text-red-600 hover:text-red-900"
-                                    >
-                                        <Trash2 size={18}/>
-                                    </button>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{formattedDateLastLogin}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{formattedDateCreated}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="text-sm text-gray-500">{formattedDateUpdated}</div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button
+                                            onClick={() => navigate(`edit/${user.id}`)}
+                                            className="text-blue-600 hover:text-blue-900 mr-3"
+                                        >
+                                            <Pencil size={18}/>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(user.id)}
+                                            className="text-red-600 hover:text-red-900"
+                                        >
+                                            <Trash2 size={18}/>
+                                        </button>
+                                    </td>
+                                </tr>
                             );
                         })}
                         </tbody>
                     </table>
-
-                    <div className="flex justify-center mt-4 gap-2">
-                        <button
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                            className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                        >
-                            Anterior
-                        </button>
-                        {[...Array(totalPages)].map((_, i) => {
-                            const pageNum = i + 1;
-                            return (
-                                <button
-                                    key={pageNum}
-                                    onClick={() => setCurrentPage(pageNum)}
-                                    className={`px-3 py-1 rounded ${
-                                        pageNum === currentPage
-                                            ? 'bg-teal-500 text-white'
-                                            : 'bg-gray-200 hover:bg-gray-300'
-                                    }`}
-                                >
-                                    {pageNum}
-                                </button>
-                            );
-                        })}
-                        <button
-                            disabled={currentPage === totalPages}
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                            className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                        >
-                            Următor
-                        </button>
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm text-gray-500 ms-4">
+                            Total utilizatori gasiti: {totalUsers}
+                        </div>
+                        <div className="flex justify-end items-center mt-4 me-4 mb-4 gap-2">
+                            <div className="text-sm text-gray-500 me-4">Pagina {currentPage} din {totalPages}</div>
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(1)}
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                            >
+                                &lt;&lt;
+                            </button>
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage(currentPage - 1)}
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                            >
+                                &lt;
+                            </button>
+                            {[...Array(totalPages)].map((_, i) => {
+                                const pageNum = i + 1;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`px-3 py-1 rounded ${
+                                            pageNum === currentPage
+                                                ? 'bg-teal-500 text-white'
+                                                : 'bg-gray-200 hover:bg-gray-300'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+                            <button
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(currentPage + 1)}
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                            >
+                                &gt;
+                            </button>
+                            <button
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage(totalPages)}
+                                className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                            >
+                                &gt;&gt;
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

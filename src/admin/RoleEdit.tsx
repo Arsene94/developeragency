@@ -41,7 +41,7 @@ const RoleEdit: React.FC = () => {
           },
         });
 
-        const responseRole = await fetch(`http://localhost:5002/api/role/${id}`,{
+        const responseRole = await fetch(`http://localhost:5002/api/role/role/${id}`,{
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -106,7 +106,7 @@ const RoleEdit: React.FC = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken');
-      const response = await fetch(`http://localhost:5002/api/role/${id}`, {
+      const response = await fetch(`http://localhost:5002/api/role/role/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
