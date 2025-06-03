@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Save, X, Plus, Trash2 } from 'lucide-react';
-
-interface Feature {
-  title: string;
-  description: string;
-}
+import { Save, X } from 'lucide-react';
 
 const ServiceAdd: React.FC = () => {
   const navigate = useNavigate();
@@ -13,40 +8,17 @@ const ServiceAdd: React.FC = () => {
 
   const [formData, setFormData] = useState({
     title: '',
+    short_description: '',
     description: '',
     icon: '',
-    features: [] as Feature[],
     status: 'active'
   });
-
-  const handleFeatureAdd = () => {
-    setFormData(prev => ({
-      ...prev,
-      features: [...prev.features, { title: '', description: '' }]
-    }));
-  };
-
-  const handleFeatureRemove = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleFeatureChange = (index: number, field: keyof Feature, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.map((feature, i) => 
-        i === index ? { ...feature, [field]: value } : feature
-      )
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5002/api/services', {
+      const response = await fetch('http://localhost:5002/api/service', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +66,20 @@ const ServiceAdd: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Descriere
+                Descriere Scurtă
+              </label>
+              <textarea
+                value={formData.short_description}
+                onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                required
+                rows={2}
+                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Descriere Detaliată
               </label>
               <textarea
                 value={formData.description}
@@ -116,6 +101,9 @@ const ServiceAdd: React.FC = () => {
                 required
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
+              <p className="mt-1 text-sm text-gray-500">
+                Exemple: Globe, ShoppingCart, LayoutGrid, Settings, etc.
+              </p>
             </div>
 
             <div>
@@ -130,52 +118,6 @@ const ServiceAdd: React.FC = () => {
                 <option value="active">Activ</option>
                 <option value="inactive">Inactiv</option>
               </select>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Caracteristici
-                </label>
-                <button
-                  type="button"
-                  onClick={handleFeatureAdd}
-                  className="flex items-center text-teal-500 hover:text-teal-600"
-                >
-                  <Plus size={20} className="mr-1" />
-                  Adaugă caracteristică
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="flex gap-4 items-start">
-                    <div className="flex-1 space-y-2">
-                      <input
-                        type="text"
-                        value={feature.title}
-                        onChange={(e) => handleFeatureChange(index, 'title', e.target.value)}
-                        placeholder="Titlu caracteristică"
-                        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                      <textarea
-                        value={feature.description}
-                        onChange={(e) => handleFeatureChange(index, 'description', e.target.value)}
-                        placeholder="Descriere caracteristică"
-                        rows={2}
-                        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleFeatureRemove(index)}
-                      className="text-red-500 hover:text-red-600 mt-2"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 
