@@ -11,7 +11,7 @@ interface Project {
     technologies: string[];
 }
 
-const AdminPortfolio: React.FC = () => {
+const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([
         {
             id: 1,
@@ -294,4 +294,4 @@ const AdminPortfolio: React.FC = () => {
     );
 };
 
-export default AdminPortfolio;
+export default Projects;
