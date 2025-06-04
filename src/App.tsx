@@ -14,7 +14,7 @@ import LoginPage from './pages/LoginPage';
 import AdminNavbar from './admin/AdminNavbar';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
-import AdminPortfolio from './admin/AdminPortfolio';
+import Projects from './admin/Content/Portfolio/Projects';
 import AdminTestimonials from './admin/AdminTestimonials';
 import AdminUsers from "./admin/Users/AdminUsers.tsx";
 import AdminUserCreate from "./admin/Users/AdminUserCreate.tsx";
@@ -68,7 +68,7 @@ function App() {
               <Route path="roles/create" element={<RoleCreate />} />
               <Route path="roles/edit/:id" element={<RoleEdit />} />
               <Route path="services" element={<AdminServices />} />
-              <Route path="portfolio" element={<AdminPortfolio />} />
+              <Route path="portfolio/projects" element={<Projects />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>
           </Route>
