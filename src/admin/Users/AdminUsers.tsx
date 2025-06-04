@@ -26,7 +26,7 @@ const AdminUsers: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`http://localhost:5002/api/user/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
+            const response = await fetch(`https://webarcabe.dacars.ro/api/user/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -81,7 +81,7 @@ const AdminUsers: React.FC = () => {
     const handleDelete = async (userId: number) => {
         if (window.confirm('Ești sigur că vrei să ștergi acest utilizator?')) {
             try {
-                const response = await fetch(`http://localhost:5002/api/user/delete/${userId}`, {
+                const response = await fetch(`https://webarcabe.dacars.ro/api/user/delete/${userId}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',

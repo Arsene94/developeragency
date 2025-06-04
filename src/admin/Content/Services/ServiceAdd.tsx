@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
 import { SingleValueProps, OptionProps } from 'react-select';
 import { MuiIcon } from "../../../icons/MuiIcons.tsx";
+import { Sketch, ColorResult } from '@uiw/react-color';
 import AsyncSelect from "react-select/async";
 import '@syncfusion/ej2-base/styles/tailwind.css';
 import '@syncfusion/ej2-icons/styles/tailwind.css';
@@ -27,23 +28,26 @@ interface IconOption {
 const ServiceAdd: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+
   const [formData, setFormData] = useState<{
     title: string;
     short_description: string;
     description: string;
     icon: IconOption | null;
+    icon_color: string;
     status: 'active' | 'inactive';
   }>({
     title: '',
     short_description: '',
     description: '',
     icon: null,
+    icon_color: '#6b7280',
     status: 'active',
   });
   registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXlec3VRR2deUkZ1V0pWYUA=');
 
   const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
-    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+    const res = await fetch(`https://webarcabe.dacars.ro/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -88,9 +92,9 @@ const ServiceAdd: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+
     try {
-      const response = await fetch('http://localhost:5002/api/service', {
+      const response = await fetch('https://webarcabe.dacars.ro/api/service', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,6 +186,19 @@ const ServiceAdd: React.FC = () => {
               <p className="mt-1 text-sm text-gray-500">
                 Exemplu: Globe, ShoppingCart, LayoutGrid, Settings, etc.
               </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Culoare icon
+              </label>
+              <Sketch
+                  style={{ marginLeft: 20 }}
+                  color={formData.icon_color ?? '#6b7280'}
+                  onChange={(color: ColorResult) => {
+                    setFormData({ ...formData, icon_color: color.hex })
+                  }}
+              />
             </div>
 
             <div>

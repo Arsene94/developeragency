@@ -16,6 +16,7 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.1",
     "@syncfusion/ej2-react-richtexteditor": "^29.2.8",
+    "@uiw/react-color": "^2.5.5",
     "bootstrap": "^5.3.6",
     "framer-motion": "^12.15.0",
     "lucide-react": "^0.344.0",

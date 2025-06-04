@@ -19,6 +19,7 @@ interface Service {
   short_description: string;
   description: string;
   icon: IconOption;
+  icon_color: string;
   status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
@@ -45,7 +46,7 @@ const ServiceList: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:5002/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`https://webarcabe.dacars.ro/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -95,7 +96,7 @@ const ServiceList: React.FC = () => {
   const handleDelete = async (serviceId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest serviciu?')) {
       try {
-        const response = await fetch(`http://localhost:5002/api/service/delete/${serviceId}`, {
+        const response = await fetch(`https://webarcabe.dacars.ro/api/service/delete/${serviceId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -121,7 +122,7 @@ const ServiceList: React.FC = () => {
 
   if (loading) return <div className="p-6">Se încarcă serviciile...</div>;
   if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
-
+console.log(services)
   return (
     <div className="p-6">
       <Snackbar
@@ -161,7 +162,7 @@ const ServiceList: React.FC = () => {
           Adaugă Serviciu
         </button>
       </div>
-      
+
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 border-b">
           <div className="relative">
@@ -187,7 +188,7 @@ const ServiceList: React.FC = () => {
                   Icon
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Descriere
+                  Descriere Scurta
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -221,10 +222,10 @@ const ServiceList: React.FC = () => {
                       <div className="text-sm font-medium text-gray-900">{service.title}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500"><MuiIcon icon={service.icon.name} size="small" /></div>
+                      <div className="text-sm text-gray-500"><MuiIcon icon={service.icon.name} size="small" color={service.icon_color} /></div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500">{service.description}</div>
+                      <div className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: service.short_description }} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

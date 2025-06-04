@@ -2,15 +2,20 @@ import React, {useEffect, useState} from 'react';
 import { MuiIcon } from "../icons/MuiIcons.tsx";
 
 interface ServiceCardProps {
-  icon: string;
+  icon: {
+    name: string;
+    provider: string;
+  };
   title: string;
   short_description: string;
+  icon_color: string;
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, short_description }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ icon, icon_color, title, short_description }) => {
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-b-4 border-teal-500">
-      <div className="text-teal-500 mb-4"><MuiIcon icon={icon} size={36} /></div>
+      <div className="text-teal-500 mb-4"><MuiIcon icon={icon.name} size={36} color={icon_color} /></div>
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-600" dangerouslySetInnerHTML={{ __html: short_description }} />
     </div>
@@ -22,7 +27,7 @@ const Services: React.FC = () => {
 
   useEffect(() => {
     async function fetchServices() {
-      const response = await fetch('http://localhost:5002/api/service/fe/all');
+      const response = await fetch('https://webarcabe.dacars.ro/api/service/fe/all');
 
       const data = await response.json();
 
@@ -54,6 +59,7 @@ const Services: React.FC = () => {
               icon={service.icon}
               title={service.title}
               short_description={service.short_description}
+              icon_color={service.icon_color}
             />
           ))}
         </div>

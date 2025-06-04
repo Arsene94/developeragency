@@ -23,7 +23,7 @@ const RolesList: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:5002/api/role/all', {
+        const response = await fetch('https://webarcabe.dacars.ro/api/role/all', {
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -65,7 +65,7 @@ const RolesList: React.FC = () => {
   const handleDelete = async (roleId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest rol?')) {
       try {
-        const response = await fetch(`http://localhost:5002/api/role/delete/${roleId}`, {
+        const response = await fetch(`https://webarcabe.dacars.ro/api/role/delete/${roleId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',

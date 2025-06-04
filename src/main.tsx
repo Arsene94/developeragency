@@ -10,7 +10,7 @@ document.title = 'Webarca - Soluții web profesionale';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter basename="/" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AuthProvider>
                 <App />
             </AuthProvider>

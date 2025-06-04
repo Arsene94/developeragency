@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
+import { Sketch, ColorResult } from '@uiw/react-color';
 import {
+  ChangeEventArgs,
   HtmlEditor,
   Image,
   Inject,
@@ -45,12 +47,14 @@ const ServiceEdit: React.FC = () => {
     short_description: string;
     description: string;
     icon: IconOption | null;
+    icon_color: string;
     status: 'active' | 'inactive';
   }>({
     title: '',
     short_description: '',
     description: '',
     icon: null,
+    icon_color: '',
     status: 'active',
   });
   registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXlec3VRR2deUkZ1V0pWYUA=');
@@ -58,7 +62,7 @@ const ServiceEdit: React.FC = () => {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`http://localhost:5002/api/service/get/${id}`, {
+        const response = await fetch(`https://webarcabe.dacars.ro/api/service/get/${id}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -82,7 +86,7 @@ const ServiceEdit: React.FC = () => {
   }, [id, token]);
 
   const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
-    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+    const res = await fetch(`https://webarcabe.dacars.ro/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -129,7 +133,7 @@ const ServiceEdit: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:5002/api/service/put/${id}`, {
+      const response = await fetch(`https://webarcabe.dacars.ro/api/service/put/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +156,7 @@ const ServiceEdit: React.FC = () => {
       alert('A apărut o eroare la actualizarea serviciului.');
     }
   };
-console.log(formData)
+
   if (loading) return <div className="p-6">Se încarcă...</div>;
   if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
 
@@ -182,9 +186,12 @@ console.log(formData)
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Descriere Scurta
               </label>
-              <RichTextEditorComponent value={formData.short_description} onChange={(value: string) =>
-                  setFormData({ ...formData, short_description: value })
-              }>
+              <RichTextEditorComponent
+                  value={formData.short_description}
+                  change={(event: ChangeEventArgs) => {
+                    setFormData(prev => ({ ...prev, short_description: event.value }));
+                  }}
+              >
                 <Inject services={[Toolbar, Image, Link, HtmlEditor, QuickToolbar]} />
               </RichTextEditorComponent>
             </div>
@@ -217,6 +224,19 @@ console.log(formData)
                   loadOptions={loadOptions}
                   components={{ Option: CustomOption, SingleValue: CustomSingleValue }}
                   placeholder="Search icons..."
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Culoare icon
+              </label>
+              <Sketch
+                  style={{ marginLeft: 20 }}
+                  color={formData.icon_color ?? '#6b7280'}
+                  onChange={(color: ColorResult) => {
+                    setFormData({ ...formData, icon_color: color.hex })
+                  }}
               />
             </div>
 

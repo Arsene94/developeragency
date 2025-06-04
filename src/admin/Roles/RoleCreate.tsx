@@ -25,7 +25,7 @@ const RoleCreate: React.FC = () => {
       setError(null);
 
       try {
-        const response = await fetch(`http://localhost:5002/api/role/permissions`, {
+        const response = await fetch(`https://webarcabe.dacars.ro/api/role/permissions`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -80,7 +80,7 @@ const RoleCreate: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5002/api/role', {
+      const response = await fetch('https://webarcabe.dacars.ro/api/role', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

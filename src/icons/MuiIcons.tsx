@@ -16,13 +16,14 @@ export const MuiIcon = ({ icon, color, size = 'medium', sx, ...props }: MuiIconP
     }
 
     const isNativeSize = ['inherit', 'small', 'medium', 'large'].includes(size as string);
-
+    console.log(color)
     return (
         <IconComponent
             {...props}
+
             fontSize={isNativeSize ? (size as SvgIconProps['fontSize']) : undefined}
             sx={{
-                color,
+                fill: color,
                 ...(isNativeSize ? {} : { fontSize: size }),
                 ...sx,
             }}
