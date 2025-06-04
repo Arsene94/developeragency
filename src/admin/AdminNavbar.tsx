@@ -40,7 +40,8 @@ const AdminNavbar: React.FC = () => {
           label: 'Portofoliu',
           submenu: [
             { path: '/zjadminwebarcats/portfolio/categories', label: 'Categorii Proiecte' },
-            { path: '/zjadminwebarcats/portfolio/projects', label: 'Proiecte' }
+            { path: '/zjadminwebarcats/portfolio/projects', label: 'Proiecte' },
+            { path: '/zjadminwebarcats/portfolio/tags', label: 'Etichete' }
           ]
         },
         { path: '/zjadminwebarcats/testimonials', label: 'Testimoniale' }

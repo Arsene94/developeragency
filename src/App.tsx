@@ -15,6 +15,8 @@ import AdminNavbar from './admin/AdminNavbar';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import Projects from './admin/Content/Portfolio/Projects';
+import Categories from './admin/Content/Portfolio/Categories';
+import Tags from './admin/Content/Portfolio/Tags';
 import AdminTestimonials from './admin/AdminTestimonials';
 import AdminUsers from "./admin/Users/AdminUsers.tsx";
 import AdminUserCreate from "./admin/Users/AdminUserCreate.tsx";
@@ -69,6 +71,8 @@ function App() {
               <Route path="roles/edit/:id" element={<RoleEdit />} />
               <Route path="services" element={<AdminServices />} />
               <Route path="portfolio/projects" element={<Projects />} />
+              <Route path="portfolio/categories" element={<Categories />} />
+              <Route path="portfolio/tags" element={<Tags />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>
           </Route>
