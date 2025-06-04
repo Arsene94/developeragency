@@ -35,7 +35,14 @@ const AdminNavbar: React.FC = () => {
       icon: <FileText size={20} />,
       submenu: [
         { path: '/zjadminwebarcats/content/services', label: 'Servicii' },
-        { path: '/zjadminwebarcats/portfolio', label: 'Portofoliu' },
+        { 
+          path: '/zjadminwebarcats/portfolio',
+          label: 'Portofoliu',
+          submenu: [
+            { path: '/zjadminwebarcats/portfolio/categories', label: 'Categorii Proiecte' },
+            { path: '/zjadminwebarcats/portfolio/projects', label: 'Proiecte' }
+          ]
+        },
         { path: '/zjadminwebarcats/testimonials', label: 'Testimoniale' }
       ]
     },
@@ -77,7 +84,12 @@ const AdminNavbar: React.FC = () => {
       return isActivePath(item.path);
     }
     if (item.submenu) {
-      return item.submenu.some((subItem: MenuItem) => isActivePath(subItem.path ?? ''));
+      return item.submenu.some((subItem: MenuItem) => {
+        if (subItem.submenu) {
+          return subItem.submenu.some((subSubItem: MenuItem) => isActivePath(subSubItem.path ?? ''));
+        }
+        return isActivePath(subItem.path ?? '');
+      });
     }
     return false;
   };
@@ -132,17 +144,37 @@ const AdminNavbar: React.FC = () => {
                     }`}
                   >
                     {item.submenu.map((subItem) => (
-                      <Link
-                        key={subItem.path}
-                        to={subItem.path}
-                        className={`flex items-center pl-12 pr-4 py-2 rounded-lg transition-colors ${
-                          isActivePath(subItem.path)
-                            ? 'bg-teal-500 text-white'
-                            : 'hover:bg-slate-700'
-                        }`}
-                      >
-                        {subItem.label}
-                      </Link>
+                      <div key={subItem.path || subItem.label}>
+                        {subItem.submenu ? (
+                          <div className="pl-12">
+                            <div className="text-sm font-medium text-gray-300 py-2">{subItem.label}</div>
+                            {subItem.submenu.map((subSubItem) => (
+                              <Link
+                                key={subSubItem.path}
+                                to={subSubItem.path}
+                                className={`flex items-center pl-4 pr-4 py-2 rounded-lg transition-colors ${
+                                  isActivePath(subSubItem.path)
+                                    ? 'bg-teal-500 text-white'
+                                    : 'hover:bg-slate-700'
+                                }`}
+                              >
+                                {subSubItem.label}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : (
+                          <Link
+                            to={subItem.path}
+                            className={`flex items-center pl-12 pr-4 py-2 rounded-lg transition-colors ${
+                              isActivePath(subItem.path)
+                                ? 'bg-teal-500 text-white'
+                                : 'hover:bg-slate-700'
+                            }`}
+                          >
+                            {subItem.label}
+                          </Link>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </div>
