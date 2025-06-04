@@ -16,7 +16,11 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
 import Projects from './admin/Content/Portfolio/Projects';
 import Categories from './admin/Content/Portfolio/Categories';
+import CategoryAdd from './admin/Content/Portfolio/CategoryAdd';
+import CategoryEdit from './admin/Content/Portfolio/CategoryEdit';
 import Tags from './admin/Content/Portfolio/Tags';
+import TagAdd from './admin/Content/Portfolio/TagAdd';
+import TagEdit from './admin/Content/Portfolio/TagEdit';
 import AdminTestimonials from './admin/AdminTestimonials';
 import AdminUsers from "./admin/Users/AdminUsers.tsx";
 import AdminUserCreate from "./admin/Users/AdminUserCreate.tsx";
@@ -72,7 +76,11 @@ function App() {
               <Route path="services" element={<AdminServices />} />
               <Route path="portfolio/projects" element={<Projects />} />
               <Route path="portfolio/categories" element={<Categories />} />
+              <Route path="portfolio/categories/create" element={<CategoryAdd />} />
+              <Route path="portfolio/categories/edit/:id" element={<CategoryEdit />} />
               <Route path="portfolio/tags" element={<Tags />} />
+              <Route path="portfolio/tags/create" element={<TagAdd />} />
+              <Route path="portfolio/tags/edit/:id" element={<TagEdit />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>
           </Route>
