@@ -9,7 +9,7 @@ const RoleCreate: React.FC = () => {
   const [loadingPermissions, setLoadingPermissions] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const moduleCheckboxRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
 
   const [formData, setFormData] = useState({
     name: '',

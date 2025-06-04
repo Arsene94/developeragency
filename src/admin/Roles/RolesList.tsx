@@ -12,7 +12,7 @@ const RolesList: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [openSuccesDelete, setOpenSuccesDelete] = React.useState(false);
   const location = useLocation() as Location & { state: LocationState };
   const [snackbarOpen, setSnackbarOpen] = useState(false);

@@ -12,12 +12,8 @@ export const LucideIcon = ({ icon, color, size = 'medium', style, ...props }: Lu
     const maybeIcon = LucideIcons[icon];
 
     // ✅ Ensure it's a valid React component
-    const IconComponent = typeof maybeIcon === 'function' ? (maybeIcon as ComponentType<LucideProps>) : null;
+    const IconComponent = maybeIcon as ComponentType<LucideProps>;
 
-    if (!IconComponent) {
-        console.warn(`Lucide icon "${icon}" is not a valid component.`);
-        return null;
-    }
 
     const sizeMap: Record<string, number> = {
         small: 16,

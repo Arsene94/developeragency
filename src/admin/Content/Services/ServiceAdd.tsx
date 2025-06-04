@@ -1,22 +1,94 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X } from 'lucide-react';
+import { SingleValueProps, OptionProps } from 'react-select';
+import { MuiIcon } from "../../../icons/MuiIcons.tsx";
+import AsyncSelect from "react-select/async";
+import '@syncfusion/ej2-base/styles/tailwind.css';
+import '@syncfusion/ej2-icons/styles/tailwind.css';
+import '@syncfusion/ej2-buttons/styles/tailwind.css';
+import '@syncfusion/ej2-splitbuttons/styles/tailwind.css';
+import '@syncfusion/ej2-inputs/styles/tailwind.css';
+import '@syncfusion/ej2-lists/styles/tailwind.css';
+import '@syncfusion/ej2-navigations/styles/tailwind.css';
+import '@syncfusion/ej2-popups/styles/tailwind.css';
+import '@syncfusion/ej2-dropdowns/styles/tailwind.css';
+import '@syncfusion/ej2-react-richtexteditor/styles/tailwind.css';
+import { HtmlEditor, Image, Inject, Link, QuickToolbar, RichTextEditorComponent, Toolbar } from '@syncfusion/ej2-react-richtexteditor';
+import { registerLicense } from '@syncfusion/ej2-base';
+
+interface IconOption {
+  value: string;
+  label: string;
+  name: string;
+  provider: 'mui' | 'lucide';
+}
 
 const ServiceAdd: React.FC = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem('userToken');
-
-  const [formData, setFormData] = useState({
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+  const [formData, setFormData] = useState<{
+    title: string;
+    short_description: string;
+    description: string;
+    icon: IconOption | null;
+    status: 'active' | 'inactive';
+  }>({
     title: '',
     short_description: '',
     description: '',
-    icon: '',
-    status: 'active'
+    icon: null,
+    status: 'active',
   });
+  registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXlec3VRR2deUkZ1V0pWYUA=');
+
+  const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
+    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    return data.icons.map((icon: IconOption) => ({
+      label: icon.name,
+      value: icon.name,
+      name: icon.name,
+      provider: icon.provider,
+    }));
+  };
+
+  const renderIcon = (provider: string, name: string) => {
+    if (provider === 'mui') {
+      return <MuiIcon icon={name} size="small" style={{ marginRight: 8 }} />;
+    }
+    return null;
+  };
+
+  const CustomSingleValue = (props: SingleValueProps<IconOption>) => {
+    const { data } = props;
+    return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {renderIcon(data.provider, data.name)}
+          {data.name}
+        </div>
+    );
+  };
+
+  const CustomOption = (props: OptionProps<IconOption>) => {
+    const { data, innerRef, innerProps } = props;
+    return (
+        <div ref={innerRef} {...innerProps} style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
+          {renderIcon(data.provider, data.name)}
+          {data.name}
+        </div>
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(formData);
     try {
       const response = await fetch('http://localhost:5002/api/service', {
         method: 'POST',
@@ -68,41 +140,47 @@ const ServiceAdd: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Descriere Scurtă
               </label>
-              <textarea
-                value={formData.short_description}
-                onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-                required
-                rows={2}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
+              <RichTextEditorComponent value={formData.short_description} onChange={(value: string) =>
+                  setFormData({ ...formData, short_description: value })
+              }>
+                <Inject services={[Toolbar, Image, Link, HtmlEditor, QuickToolbar]} />
+              </RichTextEditorComponent>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Descriere Detaliată
               </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-                rows={4}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
+              <div className="syncfusion-rte-wrapper">
+              <RichTextEditorComponent value={formData.description} onChange={(value: string) =>
+                  setFormData({ ...formData, description: value })
+              }>
+                <Inject services={[Toolbar, Image, Link, HtmlEditor, QuickToolbar]} />
+              </RichTextEditorComponent>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Icon (Lucide icon name)
+                Icon (Mui Icon Name)
               </label>
-              <input
-                type="text"
-                value={formData.icon}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              <AsyncSelect<IconOption, false>
+                  cacheOptions
+                  defaultOptions
+                  value={formData.icon}
+                  classNamePrefix="icon-select"
+                  getOptionLabel={(e) => e.label}
+                  getOptionValue={(e) => e.value}
+                  onChange={(selected) => {
+                    setFormData({ ...formData, icon: selected ?? null });
+                  }}
+                  loadOptions={loadOptions}
+                  components={{ Option: CustomOption, SingleValue: CustomSingleValue }}
+                  placeholder="Search icons..."
               />
+
               <p className="mt-1 text-sm text-gray-500">
-                Exemple: Globe, ShoppingCart, LayoutGrid, Settings, etc.
+                Exemplu: Globe, ShoppingCart, LayoutGrid, Settings, etc.
               </p>
             </div>
 

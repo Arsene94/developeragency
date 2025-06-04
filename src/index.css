@@ -203,3 +203,9 @@ canvas {
 .fade.fade-out {
   opacity: 0;
 }
+
+.icon-select__value-container {
+  &.icon-select__value-container--has-value {
+    display: flex !important;
+  }
+}

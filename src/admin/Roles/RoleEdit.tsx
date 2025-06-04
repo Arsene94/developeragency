@@ -26,7 +26,7 @@ const RoleEdit: React.FC = () => {
       setError(null);
 
       try {
-        const token = localStorage.getItem('userToken');
+        const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
         const response = await fetch(`http://localhost:5002/api/role/permissions`, {
           headers: {
             'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ const RoleEdit: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('userToken');
+      const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
       const response = await fetch(`http://localhost:5002/api/role/role/${id}`, {
         method: 'PUT',
         headers: {

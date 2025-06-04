@@ -6,7 +6,7 @@ import type {Role} from "../../types/auth.ts";
 const AdminUserCreate: React.FC = () => {
     const navigate = useNavigate();
     const [roleList, setRoleList] = useState<Role[]>([]);
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
 
     const [formData, setFormData] = useState({
         name: '',

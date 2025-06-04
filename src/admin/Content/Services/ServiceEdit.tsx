@@ -1,53 +1,76 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Plus, Trash2 } from 'lucide-react';
+import { Save, X } from 'lucide-react';
+import {
+  HtmlEditor,
+  Image,
+  Inject,
+  Link,
+  QuickToolbar,
+  RichTextEditorComponent,
+  Toolbar
+} from "@syncfusion/ej2-react-richtexteditor";
+import { SingleValueProps, OptionProps } from 'react-select';
+import { MuiIcon } from "../../../icons/MuiIcons.tsx";
+import AsyncSelect from "react-select/async";
+import '@syncfusion/ej2-base/styles/tailwind.css';
+import '@syncfusion/ej2-icons/styles/tailwind.css';
+import '@syncfusion/ej2-buttons/styles/tailwind.css';
+import '@syncfusion/ej2-splitbuttons/styles/tailwind.css';
+import '@syncfusion/ej2-inputs/styles/tailwind.css';
+import '@syncfusion/ej2-lists/styles/tailwind.css';
+import '@syncfusion/ej2-navigations/styles/tailwind.css';
+import '@syncfusion/ej2-popups/styles/tailwind.css';
+import '@syncfusion/ej2-dropdowns/styles/tailwind.css';
+import '@syncfusion/ej2-react-richtexteditor/styles/tailwind.css';
+import { registerLicense } from '@syncfusion/ej2-base';
 
-interface Feature {
-  title: string;
-  description: string;
-}
 
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  icon: string;
-  features: Feature[];
-  status: 'active' | 'inactive';
+interface IconOption {
+  value: string;
+  label: string;
+  name: string;
+  provider: 'mui' | 'lucide';
 }
 
 const ServiceEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<Service>({
-    id: 0,
+  const [formData, setFormData] = useState<{
+    title: string;
+    short_description: string;
+    description: string;
+    icon: IconOption | null;
+    status: 'active' | 'inactive';
+  }>({
     title: '',
+    short_description: '',
     description: '',
-    icon: '',
-    features: [],
-    status: 'active'
+    icon: null,
+    status: 'active',
   });
+  registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXlec3VRR2deUkZ1V0pWYUA=');
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`http://localhost:5002/api/services/${id}`, {
+        const response = await fetch(`http://localhost:5002/api/service/get/${id}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
-
         if (!response.ok) {
           throw new Error('Failed to fetch service');
         }
 
         const data = await response.json();
-        setFormData(data.service);
+
+        setFormData(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -58,34 +81,55 @@ const ServiceEdit: React.FC = () => {
     fetchService();
   }, [id, token]);
 
-  const handleFeatureAdd = () => {
-    setFormData(prev => ({
-      ...prev,
-      features: [...prev.features, { title: '', description: '' }]
+  const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
+    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    return data.icons.map((icon: IconOption) => ({
+      label: icon.name,
+      value: icon.name,
+      name: icon.name,
+      provider: icon.provider,
     }));
   };
 
-  const handleFeatureRemove = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.filter((_, i) => i !== index)
-    }));
+  const renderIcon = (provider: string, name: string) => {
+    if (provider === 'mui') {
+      return <MuiIcon icon={name} size="small" style={{ marginRight: 8 }} />;
+    }
+    return null;
   };
 
-  const handleFeatureChange = (index: number, field: keyof Feature, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      features: prev.features.map((feature, i) => 
-        i === index ? { ...feature, [field]: value } : feature
-      )
-    }));
+  const CustomSingleValue = (props: SingleValueProps<IconOption>) => {
+    const { data } = props;
+    return (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {renderIcon(data.provider, data.name)}
+          {data.name}
+        </div>
+    );
+  };
+
+  const CustomOption = (props: OptionProps<IconOption>) => {
+    const { data, innerRef, innerProps } = props;
+    return (
+        <div ref={innerRef} {...innerProps} style={{ display: 'flex', alignItems: 'center', padding: 8 }}>
+          {renderIcon(data.provider, data.name)}
+          {data.name}
+        </div>
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:5002/api/services/${id}`, {
+      const response = await fetch(`http://localhost:5002/api/service/put/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +152,7 @@ const ServiceEdit: React.FC = () => {
       alert('A apărut o eroare la actualizarea serviciului.');
     }
   };
-
+console.log(formData)
   if (loading) return <div className="p-6">Se încarcă...</div>;
   if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
 
@@ -136,27 +180,43 @@ const ServiceEdit: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Descriere Scurta
+              </label>
+              <RichTextEditorComponent value={formData.short_description} onChange={(value: string) =>
+                  setFormData({ ...formData, short_description: value })
+              }>
+                <Inject services={[Toolbar, Image, Link, HtmlEditor, QuickToolbar]} />
+              </RichTextEditorComponent>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Descriere
               </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                required
-                rows={4}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
+              <RichTextEditorComponent value={formData.description} onChange={(value: string) =>
+                  setFormData({ ...formData, description: value })
+              }>
+                <Inject services={[Toolbar, Image, Link, HtmlEditor, QuickToolbar]} />
+              </RichTextEditorComponent>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Icon (Lucide icon name)
               </label>
-              <input
-                type="text"
-                value={formData.icon}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              <AsyncSelect<IconOption, false>
+                  cacheOptions
+                  defaultOptions={true}
+                  value={formData.icon}
+                  classNamePrefix="icon-select"
+                  getOptionLabel={(e) => e.label}
+                  getOptionValue={(e) => e.value}
+                  onChange={(selected) => {
+                    setFormData({ ...formData, icon: selected ?? null });
+                  }}
+                  loadOptions={loadOptions}
+                  components={{ Option: CustomOption, SingleValue: CustomSingleValue }}
+                  placeholder="Search icons..."
               />
             </div>
 
@@ -172,52 +232,6 @@ const ServiceEdit: React.FC = () => {
                 <option value="active">Activ</option>
                 <option value="inactive">Inactiv</option>
               </select>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Caracteristici
-                </label>
-                <button
-                  type="button"
-                  onClick={handleFeatureAdd}
-                  className="flex items-center text-teal-500 hover:text-teal-600"
-                >
-                  <Plus size={20} className="mr-1" />
-                  Adaugă caracteristică
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="flex gap-4 items-start">
-                    <div className="flex-1 space-y-2">
-                      <input
-                        type="text"
-                        value={feature.title}
-                        onChange={(e) => handleFeatureChange(index, 'title', e.target.value)}
-                        placeholder="Titlu caracteristică"
-                        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                      <textarea
-                        value={feature.description}
-                        onChange={(e) => handleFeatureChange(index, 'description', e.target.value)}
-                        placeholder="Descriere caracteristică"
-                        rows={2}
-                        className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleFeatureRemove(index)}
-                      className="text-red-500 hover:text-red-600 mt-2"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
 

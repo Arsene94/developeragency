@@ -6,12 +6,19 @@ import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
 import { MuiIcon } from '../../../icons/MuiIcons';
 
+interface IconOption {
+  value: string;
+  label: string;
+  name: string;
+  provider: 'mui' | 'lucide';
+}
+
 interface Service {
   id: number;
   title: string;
   short_description: string;
   description: string;
-  icon: string;
+  icon: IconOption;
   status: 'active' | 'inactive';
   created_at: string;
   updated_at: string;
@@ -24,7 +31,7 @@ const ServiceList: React.FC = () => {
   const [totalServices, setTotalServices] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [openSuccessDelete, setOpenSuccessDelete] = React.useState(false);
   const location = useLocation() as Location & { state: LocationState };
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -36,6 +43,7 @@ const ServiceList: React.FC = () => {
   const fetchServices = async (page = 1, search = '') => {
     setLoading(true);
     setError(null);
+
     try {
       const response = await fetch(`http://localhost:5002/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
         headers: {
@@ -87,7 +95,7 @@ const ServiceList: React.FC = () => {
   const handleDelete = async (serviceId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest serviciu?')) {
       try {
-        const response = await fetch(`http://localhost:5002/api/services/delete/${serviceId}`, {
+        const response = await fetch(`http://localhost:5002/api/service/delete/${serviceId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -153,7 +161,7 @@ const ServiceList: React.FC = () => {
           Adaugă Serviciu
         </button>
       </div>
-      <MuiIcon icon="AddShoppingCart" size="large" color="#0d9488" />
+      
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-4 border-b">
           <div className="relative">
@@ -174,6 +182,9 @@ const ServiceList: React.FC = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Titlu
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Icon
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Descriere
@@ -208,6 +219,9 @@ const ServiceList: React.FC = () => {
                   <tr key={service.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{service.title}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-500"><MuiIcon icon={service.icon.name} size="small" /></div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-500">{service.description}</div>

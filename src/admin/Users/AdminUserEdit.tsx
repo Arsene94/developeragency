@@ -9,7 +9,7 @@ const AdminUserEdit: React.FC = () => {
     const [loadingUser, setLoadingUser] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [roleList, setRoleList] = useState<Role[]>([]);
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -87,7 +87,7 @@ const AdminUserEdit: React.FC = () => {
         e.preventDefault();
 
         try {
-            const token = localStorage.getItem('userToken');
+            const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
             const response = await fetch(`http://localhost:5002/api/user/put/${id}`, {
                 method: 'PUT',
                 headers: {
