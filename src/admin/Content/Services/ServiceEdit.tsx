@@ -62,7 +62,7 @@ const ServiceEdit: React.FC = () => {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`https://webarcabe.dacars.ro/api/service/get/${id}`, {
+        const response = await fetch(`http://localhost:5002/api/service/get/${id}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const ServiceEdit: React.FC = () => {
   }, [id, token]);
 
   const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
-    const res = await fetch(`https://webarcabe.dacars.ro/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ const ServiceEdit: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`https://webarcabe.dacars.ro/api/service/put/${id}`, {
+      const response = await fetch(`http://localhost:5002/api/service/put/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

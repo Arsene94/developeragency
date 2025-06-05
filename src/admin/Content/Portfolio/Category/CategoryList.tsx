@@ -86,7 +86,7 @@ const CategoryList: React.FC = () => {
   const handleDelete = async (serviceId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest serviciu?')) {
       try {
-        const response = await fetch(`https://webarcabe.dacars.ro/api/service/delete/${serviceId}`, {
+        const response = await fetch(`http://localhost:5002/api/service/delete/${serviceId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ const CategoryList: React.FC = () => {
               variant="filled"
               sx={{ width: '100%' }}
           >
-            Serviciul a fost șters cu succes!
+            Categoria a fost șters cu succes!
           </Alert>
         </Snackbar>
 
@@ -184,7 +184,7 @@ const CategoryList: React.FC = () => {
                   Creat la
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actualizat la
+                  Ultima actualizare
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acțiuni

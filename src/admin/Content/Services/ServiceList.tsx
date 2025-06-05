@@ -46,7 +46,7 @@ const ServiceList: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`https://webarcabe.dacars.ro/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
+      const response = await fetch(`http://localhost:5002/api/service/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`, {
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -96,7 +96,7 @@ const ServiceList: React.FC = () => {
   const handleDelete = async (serviceId: number) => {
     if (window.confirm('Ești sigur că vrei să ștergi acest serviciu?')) {
       try {
-        const response = await fetch(`https://webarcabe.dacars.ro/api/service/delete/${serviceId}`, {
+        const response = await fetch(`http://localhost:5002/api/service/delete/${serviceId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -197,7 +197,7 @@ const ServiceList: React.FC = () => {
                   Creat la
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actualizat la
+                  Ultima actualizare
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Acțiuni

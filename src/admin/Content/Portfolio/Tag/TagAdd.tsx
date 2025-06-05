@@ -22,21 +22,19 @@ const TagAdd: React.FC = () => {
   const checkSlugAvailability = async (baseSlug: string) => {
     setIsCheckingSlug(true);
     try {
-      const response = await fetch(`https://webarcabe.dacars.ro/api/portfolio/tag/check-slug/${baseSlug}`, {
+      const response = await fetch(`http://localhost:5002/api/portfolio/tag/check-slug/${baseSlug}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       const data = await response.json();
-      
-      if (response.ok) {
-        // If slug exists, data.nextAvailable will contain the next available slug
-        // (e.g., "react-2" if "react" is taken)
+
+      if (response.ok && data.status === true) {
         return data.nextAvailable || baseSlug;
       }
-      
+
       return baseSlug;
     } catch (error) {
       console.error('Error checking slug availability:', error);
@@ -49,7 +47,7 @@ const TagAdd: React.FC = () => {
   const handleNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     const baseSlug = generateSlug(name);
-    
+
     setFormData(prev => ({
       ...prev,
       name,
@@ -68,7 +66,7 @@ const TagAdd: React.FC = () => {
   const handleSlugChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputSlug = generateSlug(e.target.value);
     const finalSlug = await checkSlugAvailability(inputSlug);
-    
+
     setFormData(prev => ({
       ...prev,
       slug: finalSlug
@@ -79,7 +77,7 @@ const TagAdd: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://webarcabe.dacars.ro/api/portfolio/tag', {
+      const response = await fetch('http://localhost:5002/api/portfolio/tag', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +129,7 @@ const TagAdd: React.FC = () => {
               </label>
               <div className="flex items-center">
                 <span className="text-gray-500 bg-gray-100 px-3 py-2 rounded-l-md border border-r-0">
-                  webarca.ro/tag/
+                  {`${window.location.origin}/tag/`}
                 </span>
                 <input
                   type="text"
@@ -145,7 +143,7 @@ const TagAdd: React.FC = () => {
                 {isCheckingSlug ? (
                   'Verificare disponibilitate slug...'
                 ) : (
-                  `URL-ul etichetei va fi: webarca.ro/tag/${formData.slug}`
+                  `URL-ul etichetei va fi: ${window.location.origin}/tag/${formData.slug}`
                 )}
               </p>
             </div>

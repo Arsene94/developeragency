@@ -14,11 +14,11 @@ import LoginPage from './pages/LoginPage';
 import AdminNavbar from './admin/AdminNavbar';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminServices from './admin/AdminServices';
-import Projects from './admin/Content/Portfolio/Project/Projects.tsx';
+import ProjectList from './admin/Content/Portfolio/Project/ProjectList.tsx';
 import CategoryList from './admin/Content/Portfolio/Category/CategoryList.tsx';
 import CategoryAdd from './admin/Content/Portfolio/Category/CategoryAdd';
 import CategoryEdit from './admin/Content/Portfolio/Category/CategoryEdit';
-import Tags from './admin/Content/Portfolio/Tag/Tags';
+import TagList from './admin/Content/Portfolio/Tag/TagList.tsx';
 import TagAdd from './admin/Content/Portfolio/Tag/TagAdd';
 import TagEdit from './admin/Content/Portfolio/Tag/TagEdit';
 import AdminTestimonials from './admin/AdminTestimonials';
@@ -74,11 +74,11 @@ function App() {
               <Route path="roles/create" element={<RoleCreate />} />
               <Route path="roles/edit/:id" element={<RoleEdit />} />
               <Route path="services" element={<AdminServices />} />
-              <Route path="content/portfolio/projects" element={<Projects />} />
+              <Route path="content/portfolio/projects" element={<ProjectList />} />
               <Route path="content/portfolio/categories" element={<CategoryList />} />
               <Route path="content/portfolio/categories/create" element={<CategoryAdd />} />
               <Route path="content/portfolio/categories/edit/:id" element={<CategoryEdit />} />
-              <Route path="content/portfolio/tags" element={<Tags />} />
+              <Route path="content/portfolio/tags" element={<TagList />} />
               <Route path="content/portfolio/tags/create" element={<TagAdd />} />
               <Route path="content/portfolio/tags/edit/:id" element={<TagEdit />} />
               <Route path="testimonials" element={<AdminTestimonials />} />

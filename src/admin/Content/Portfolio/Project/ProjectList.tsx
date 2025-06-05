@@ -11,7 +11,7 @@ interface Project {
     technologies: string[];
 }
 
-const Projects: React.FC = () => {
+const ProjectList: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([
         {
             id: 1,
@@ -294,4 +294,4 @@ const Projects: React.FC = () => {
     );
 };
 
-export default Projects;
+export default ProjectList;

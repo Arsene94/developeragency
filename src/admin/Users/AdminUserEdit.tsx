@@ -22,7 +22,7 @@ const AdminUserEdit: React.FC = () => {
             setLoadingUser(true);
             setError(null);
             try {
-                const response = await fetch(`https://webarcabe.dacars.ro/api/user/get/${id}`, {
+                const response = await fetch(`http://localhost:5002/api/user/get/${id}`, {
                     headers: {
                         'Content-Type': 'application/json',
                         ...(token ? {Authorization: `Bearer ${token}`} : {}),
@@ -62,7 +62,7 @@ const AdminUserEdit: React.FC = () => {
     useEffect(() => {
         const fetchRoles = async () => {
             try {
-                const response = await fetch('https://webarcabe.dacars.ro/api/role/all', {
+                const response = await fetch('http://localhost:5002/api/role/all', {
                     headers: {
                         'Content-Type': 'application/json',
                         ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -88,7 +88,7 @@ const AdminUserEdit: React.FC = () => {
 
         try {
             const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-            const response = await fetch(`https://webarcabe.dacars.ro/api/user/put/${id}`, {
+            const response = await fetch(`http://localhost:5002/api/user/put/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

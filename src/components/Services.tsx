@@ -27,7 +27,7 @@ const Services: React.FC = () => {
 
   useEffect(() => {
     async function fetchServices() {
-      const response = await fetch('https://webarcabe.dacars.ro/api/service/fe/all');
+      const response = await fetch('http://localhost:5002/api/service/fe/all');
 
       const data = await response.json();
 

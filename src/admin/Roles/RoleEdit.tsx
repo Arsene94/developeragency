@@ -27,21 +27,21 @@ const RoleEdit: React.FC = () => {
 
       try {
         const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-        const response = await fetch(`https://webarcabe.dacars.ro/api/role/permissions`, {
+        const response = await fetch(`http://localhost:5002/api/role/permissions`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
 
-        const responseCurrentPermissions = await fetch(`https://webarcabe.dacars.ro/api/role/${id}/permissions`, {
+        const responseCurrentPermissions = await fetch(`http://localhost:5002/api/role/${id}/permissions`, {
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
         });
 
-        const responseRole = await fetch(`https://webarcabe.dacars.ro/api/role/role/${id}`,{
+        const responseRole = await fetch(`http://localhost:5002/api/role/role/${id}`,{
           headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -106,7 +106,7 @@ const RoleEdit: React.FC = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-      const response = await fetch(`https://webarcabe.dacars.ro/api/role/role/${id}`, {
+      const response = await fetch(`http://localhost:5002/api/role/role/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

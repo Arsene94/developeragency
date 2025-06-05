@@ -14,7 +14,7 @@ const CategoryAdd: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://webarcabe.dacars.ro/api/portfolio/category', {
+      const response = await fetch('http://localhost:5002/api/portfolio/category', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

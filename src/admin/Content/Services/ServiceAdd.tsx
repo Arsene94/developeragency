@@ -47,7 +47,7 @@ const ServiceAdd: React.FC = () => {
   registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWXlec3VRR2deUkZ1V0pWYUA=');
 
   const loadOptions = async (inputValue: string): Promise<IconOption[]> => {
-    const res = await fetch(`https://webarcabe.dacars.ro/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
+    const res = await fetch(`http://localhost:5002/api/icons/all?q=${encodeURIComponent(inputValue)}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ const ServiceAdd: React.FC = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://webarcabe.dacars.ro/api/service', {
+      const response = await fetch('http://localhost:5002/api/service', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
