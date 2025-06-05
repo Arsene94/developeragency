@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Pencil, Trash2, Plus, ExternalLink, X } from 'lucide-react';
+import { Pencil, Trash2, Plus, ExternalLink } from 'lucide-react';
+import {useNavigate} from "react-router-dom";
 
 interface Project {
     id: number;
@@ -12,6 +13,8 @@ interface Project {
 }
 
 const ProjectList: React.FC = () => {
+    const navigate = useNavigate();
+
     const [projects, setProjects] = useState<Project[]>([
         {
             id: 1,
@@ -25,192 +28,11 @@ const ProjectList: React.FC = () => {
         // ... other initial projects
     ]);
 
-    const [editingProject, setEditingProject] = useState<Project | null>(null);
-    const [isAddingNew, setIsAddingNew] = useState(false);
-
-    const categories = ['e-commerce', 'portal', 'blog', 'app', 'portfolio'];
-
-    const handleEdit = (project: Project) => {
-        setEditingProject(project);
-        setIsAddingNew(false);
-    };
 
     const handleDelete = (id: number) => {
         if (window.confirm('Ești sigur că vrei să ștergi acest proiect?')) {
             setProjects(projects.filter(project => project.id !== id));
         }
-    };
-
-    const handleSave = (project: Project) => {
-        if (isAddingNew) {
-            setProjects([...projects, { ...project, id: projects.length + 1 }]);
-        } else {
-            setProjects(projects.map(p => p.id === project.id ? project : p));
-        }
-        setEditingProject(null);
-        setIsAddingNew(false);
-    };
-
-    const handleAddNew = () => {
-        setIsAddingNew(true);
-        setEditingProject({
-            id: projects.length + 1,
-            title: '',
-            category: 'e-commerce',
-            image: '',
-            description: '',
-            link: '',
-            technologies: []
-        });
-    };
-
-    const ProjectForm = ({ project, onSave, onCancel }: { project: Project, onSave: (project: Project) => void, onCancel: () => void }) => {
-        const [formData, setFormData] = useState(project);
-        const [newTechnology, setNewTechnology] = useState('');
-
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            const { name, value } = e.target;
-            setFormData({ ...formData, [name]: value });
-        };
-
-        const handleAddTechnology = () => {
-            if (newTechnology && !formData.technologies.includes(newTechnology)) {
-                setFormData({
-                    ...formData,
-                    technologies: [...formData.technologies, newTechnology]
-                });
-                setNewTechnology('');
-            }
-        };
-
-        const handleRemoveTechnology = (tech: string) => {
-            setFormData({
-                ...formData,
-                technologies: formData.technologies.filter(t => t !== tech)
-            });
-        };
-
-        return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                    <h3 className="text-xl font-bold mb-4">
-                        {isAddingNew ? 'Adaugă Proiect Nou' : 'Editează Proiect'}
-                    </h3>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Titlu</label>
-                            <input
-                                type="text"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Categorie</label>
-                            <select
-                                name="category"
-                                value={formData.category}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                            >
-                                {categories.map(category => (
-                                    <option key={category} value={category}>
-                                        {category.charAt(0).toUpperCase() + category.slice(1)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Imagine URL</label>
-                            <input
-                                type="text"
-                                name="image"
-                                value={formData.image}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Descriere</label>
-                            <textarea
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                rows={4}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Link</label>
-                            <input
-                                type="text"
-                                name="link"
-                                value={formData.link}
-                                onChange={handleChange}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Tehnologii</label>
-                            <div className="flex gap-2 mb-2">
-                                <input
-                                    type="text"
-                                    value={newTechnology}
-                                    onChange={(e) => setNewTechnology(e.target.value)}
-                                    className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                                    placeholder="Adaugă tehnologie"
-                                />
-                                <button
-                                    onClick={handleAddTechnology}
-                                    className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
-                                >
-                                    <Plus size={20} />
-                                </button>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {formData.technologies.map((tech, index) => (
-                                    <span
-                                        key={index}
-                                        className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full flex items-center gap-2"
-                                    >
-                    {tech}
-                                        <button
-                                            onClick={() => handleRemoveTechnology(tech)}
-                                            className="text-gray-500 hover:text-red-500"
-                                        >
-                      <X size={16} />
-                    </button>
-                  </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 flex justify-end gap-4">
-                        <button
-                            onClick={() => onCancel()}
-                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Anulează
-                        </button>
-                        <button
-                            onClick={() => onSave(formData)}
-                            className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
-                        >
-                            Salvează
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
     };
 
     return (
@@ -219,7 +41,7 @@ const ProjectList: React.FC = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold">Gestionare Portofoliu</h2>
                     <button
-                        onClick={handleAddNew}
+                        onClick={() => navigate('create')}
                         className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 flex items-center gap-2"
                     >
                         <Plus size={20} />
@@ -253,7 +75,7 @@ const ProjectList: React.FC = () => {
                                 <div className="flex justify-between items-center">
                                     <div className="space-x-2">
                                         <button
-                                            onClick={() => handleEdit(project)}
+                                            onClick={() => navigate(`edit/${project}`)}
                                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
                                         >
                                             <Pencil size={20} />
@@ -278,17 +100,6 @@ const ProjectList: React.FC = () => {
                         </div>
                     ))}
                 </div>
-
-                {(editingProject || isAddingNew) && (
-                    <ProjectForm
-                        project={editingProject!}
-                        onSave={handleSave}
-                        onCancel={() => {
-                            setEditingProject(null);
-                            setIsAddingNew(false);
-                        }}
-                    />
-                )}
             </div>
         </main>
     );

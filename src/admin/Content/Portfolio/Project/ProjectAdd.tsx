@@ -6,6 +6,7 @@ interface Project {
   title: string;
   category: string;
   image: string;
+  slug: string;
   description: string;
   link: string;
   technologies: string[];
@@ -15,11 +16,12 @@ const ProjectAdd: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [newTechnology, setNewTechnology] = useState('');
-  
+
   const [formData, setFormData] = useState<Project>({
     title: '',
     category: 'e-commerce',
     image: '',
+    slug: '',
     description: '',
     link: '',
     technologies: []
@@ -41,6 +43,69 @@ const ProjectAdd: React.FC = () => {
       });
       setNewTechnology('');
     }
+  };
+
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false);
+
+  const generateSlug = (name: string) => {
+    return name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+  };
+
+  const checkSlugAvailability = async (baseSlug: string) => {
+    setIsCheckingSlug(true);
+    try {
+      const response = await fetch(`http://localhost:5002/api/portfolio/tag/check-slug/${baseSlug}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === true) {
+        return data.nextAvailable || baseSlug;
+      }
+
+      return baseSlug;
+    } catch (error) {
+      console.error('Error checking slug availability:', error);
+      return baseSlug;
+    } finally {
+      setIsCheckingSlug(false);
+    }
+  };
+
+  const handleSlugChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputSlug = generateSlug(e.target.value);
+    const finalSlug = await checkSlugAvailability(inputSlug);
+
+    setFormData(prev => ({
+      ...prev,
+      slug: finalSlug
+    }));
+  };
+
+  const handleNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    const baseSlug = generateSlug(name);
+
+    setFormData(prev => ({
+      ...prev,
+      title: name,
+      slug: baseSlug
+    }));
+
+    const finalSlug = await checkSlugAvailability(baseSlug);
+    setFormData(prev => ({
+      ...prev,
+      title: name,
+      slug: finalSlug
+    }));
   };
 
   const handleRemoveTechnology = (tech: string) => {
@@ -94,7 +159,7 @@ const ProjectAdd: React.FC = () => {
               <input
                 type="text"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={handleNameChange}
                 required
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
@@ -128,6 +193,31 @@ const ProjectAdd: React.FC = () => {
                 required
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Permalink
+              </label>
+              <div className="flex items-center">
+                <span className="text-gray-500 bg-gray-100 px-3 py-2 rounded-l-md border border-r-0">
+                  {`${window.location.origin}/project/`}
+                </span>
+                <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={handleSlugChange}
+                    required
+                    className="flex-1 px-4 py-2 border rounded-r-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                />
+              </div>
+              <p className="mt-1 text-sm text-gray-500">
+                {isCheckingSlug ? (
+                    'Verificare disponibilitate slug...'
+                ) : (
+                    `URL-ul etichetei va fi: ${window.location.origin}/project/${formData.slug}`
+                )}
+              </p>
             </div>
 
             <div>
