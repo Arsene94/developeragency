@@ -1,10 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Upload } from 'lucide-react';
+import AsyncSelect from "react-select/async";
 
 interface Tag {
   id: number;
   name: string;
+}
+
+interface TagOption {
+  value: number;
+  label: string;
 }
 
 interface Project {
@@ -14,16 +20,14 @@ interface Project {
   imageFile: File | null;
   slug: string;
   description: string;
-  technologies: number[]; // Changed to store tag IDs
+  technologies: number[];
 }
 
 const ProjectAdd: React.FC = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
-  const [newTechnology, setNewTechnology] = useState('');
   const [isUsingFile, setIsUsingFile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [tags, setTags] = useState<Tag[]>([]);
   const [formData, setFormData] = useState<Project>({
     title: '',
     category: 'e-commerce',
@@ -42,39 +46,32 @@ const ProjectAdd: React.FC = () => {
     { value: 'app', label: 'Application' }
   ];
 
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const response = await fetch(`http://localhost:5002/api/portfolio/tag/all`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch project');
-        }
-
-        const data = await response.json();
-        setTags(data.tags || []);
-      } catch (err) {
-        console.error(err instanceof Error ? err.message : 'An error occurred');
-      }
-    }
-
-    fetchTags()
-  }, [token]);
-
-  const handleAddTechnology = (tagId: number) => {
-    if (!formData.technologies.includes(tagId)) {
-      setFormData(prev => ({
-        ...prev,
-        technologies: [...prev.technologies, tagId]
+  const loadTags = async (inputValue: string): Promise<TagOption[]> => {
+    try {
+      const response = await fetch(`http://localhost:5002/api/portfolio/tag/all?search=${encodeURIComponent(inputValue)}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      return data.tags.map((tag: Tag) => ({
+        value: tag.id,
+        label: tag.name
       }));
+    } catch (error) {
+      console.error('Error loading tags:', error);
+      return [];
     }
   };
 
-  console.log(tags)
+  const handleTagChange = (selectedOptions: TagOption[] | null) => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: selectedOptions ? selectedOptions.map(option => option.value) : []
+    }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -156,13 +153,6 @@ const ProjectAdd: React.FC = () => {
       ...prev,
       title: name,
       slug: finalSlug
-    }));
-  };
-
-  const handleRemoveTechnology = (tagId: number) => {
-    setFormData(prev => ({
-      ...prev,
-      technologies: prev.technologies.filter(id => id !== tagId)
     }));
   };
 
@@ -359,25 +349,16 @@ const ProjectAdd: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tehnologii
               </label>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    onClick={() => 
-                      formData.technologies.includes(tag.id) 
-                        ? handleRemoveTechnology(tag.id)
-                        : handleAddTechnology(tag.id)
-                    }
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      formData.technologies.includes(tag.id)
-                        ? 'bg-teal-500 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
-              </div>
+              <AsyncSelect
+                isMulti
+                cacheOptions
+                defaultOptions
+                loadOptions={loadTags}
+                onChange={(newValue) => handleTagChange(newValue as TagOption[])}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Selectează tehnologii..."
+              />
             </div>
           </div>
 

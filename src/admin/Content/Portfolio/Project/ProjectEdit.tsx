@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Plus, Upload } from 'lucide-react';
+import { Save, X, Upload } from 'lucide-react';
+import AsyncSelect from "react-select/async";
 
 interface Tag {
   id: number;
   name: string;
+}
+
+interface TagOption {
+  value: number;
+  label: string;
 }
 
 interface Project {
@@ -20,12 +26,11 @@ interface Project {
 const ProjectEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tags, setTags] = useState<Tag[]>([]);
   const [isUsingFile, setIsUsingFile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
 
   const [formData, setFormData] = useState<Project>({
     title: '',
@@ -48,6 +53,7 @@ const ProjectEdit: React.FC = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
+        const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
         const response = await fetch(`http://localhost:5002/api/portfolio/project/get/${id}`, {
           headers: {
             'Content-Type': 'application/json',
@@ -63,6 +69,25 @@ const ProjectEdit: React.FC = () => {
           ...data,
           imageFile: null
         });
+
+        // Fetch tags for the project
+        const tagsResponse = await fetch(`http://localhost:5002/api/portfolio/tag/all`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (tagsResponse.ok) {
+          const tagsData = await tagsResponse.json();
+          const projectTags = tagsData.tags
+            .filter((tag: Tag) => data.technologies.includes(tag.id))
+            .map((tag: Tag) => ({
+              value: tag.id,
+              label: tag.name
+            }));
+          setSelectedTags(projectTags);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -71,7 +96,35 @@ const ProjectEdit: React.FC = () => {
     };
 
     fetchProject();
-  }, [id, token]);
+  }, [id]);
+
+  const loadTags = async (inputValue: string): Promise<TagOption[]> => {
+    try {
+      const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+      const response = await fetch(`http://localhost:5002/api/portfolio/tag/all?search=${encodeURIComponent(inputValue)}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      return data.tags.map((tag: Tag) => ({
+        value: tag.id,
+        label: tag.name
+      }));
+    } catch (error) {
+      console.error('Error loading tags:', error);
+      return [];
+    }
+  };
+
+  const handleTagChange = (selectedOptions: TagOption[] | null) => {
+    setSelectedTags(selectedOptions || []);
+    setFormData(prev => ({
+      ...prev,
+      technologies: selectedOptions ? selectedOptions.map(option => option.value) : []
+    }));
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,6 +160,7 @@ const ProjectEdit: React.FC = () => {
   const checkSlugAvailability = async (baseSlug: string) => {
     setIsCheckingSlug(true);
     try {
+      const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
       const response = await fetch(`http://localhost:5002/api/portfolio/tag/check-slug/${baseSlug}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -139,22 +193,6 @@ const ProjectEdit: React.FC = () => {
     }));
   };
 
-  const handleAddTechnology = (tagId: number) => {
-    if (!formData.technologies.includes(tagId)) {
-      setFormData(prev => ({
-        ...prev,
-        technologies: [...prev.technologies, tagId]
-      }));
-    }
-  };
-
-  const handleRemoveTechnology = (tagId: number) => {
-    setFormData(prev => ({
-      ...prev,
-      technologies: prev.technologies.filter(id => id !== tagId)
-    }));
-  };
-
   const handleNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     const baseSlug = generateSlug(name);
@@ -177,6 +215,7 @@ const ProjectEdit: React.FC = () => {
     e.preventDefault();
 
     try {
+      const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('category', formData.category);
@@ -379,25 +418,17 @@ const ProjectEdit: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tehnologii
               </label>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    onClick={() => 
-                      formData.technologies.includes(tag.id) 
-                        ? handleRemoveTechnology(tag.id)
-                        : handleAddTechnology(tag.id)
-                    }
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      formData.technologies.includes(tag.id)
-                        ? 'bg-teal-500 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                ))}
-              </div>
+              <AsyncSelect
+                isMulti
+                cacheOptions
+                defaultOptions
+                value={selectedTags}
+                loadOptions={loadTags}
+                onChange={(newValue) => handleTagChange(newValue as TagOption[])}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Selectează tehnologii..."
+              />
             </div>
           </div>
 
@@ -412,7 +443,7 @@ const ProjectEdit: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-4  py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 flex items-center gap-2"
+              className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 flex items-center gap-2"
             >
               <Save size={20} />
               Salvează
