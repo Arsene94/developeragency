@@ -4,6 +4,7 @@ import { Save, X } from 'lucide-react';
 
 const CategoryAdd: React.FC = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
   const [formData, setFormData] = useState({
     name: '',
     description: ''
@@ -11,8 +12,30 @@ const CategoryAdd: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // API call would go here
-    navigate('/zjadminwebarcats/portfolio/categories');
+
+    try {
+      const response = await fetch('https://webarcabe.dacars.ro/api/portfolio/category', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/zjadminwebarcats/content/portfolio/categories', {
+          state: { successMessage: `Categoria ${formData.name} a fost creata cu succes!` },
+        });
+      } else {
+        alert(data.error || 'Eroare la crearea categoriei.');
+      }
+    } catch (err) {
+      console.error('Eroare la trimiterea formularului:', err);
+      alert('A apărut o eroare la trimiterea formularului.');
+    }
   };
 
   return (

@@ -35,13 +35,13 @@ const AdminNavbar: React.FC = () => {
       icon: <FileText size={20} />,
       submenu: [
         { path: '/zjadminwebarcats/content/services', label: 'Servicii' },
-        { 
+        {
           path: '/zjadminwebarcats/portfolio',
           label: 'Portofoliu',
           submenu: [
-            { path: '/zjadminwebarcats/portfolio/categories', label: 'Categorii Proiecte' },
-            { path: '/zjadminwebarcats/portfolio/projects', label: 'Proiecte' },
-            { path: '/zjadminwebarcats/portfolio/tags', label: 'Etichete' }
+            { path: '/zjadminwebarcats/content/portfolio/categories', label: 'Categorii Proiecte' },
+            { path: '/zjadminwebarcats/content/portfolio/projects', label: 'Proiecte' },
+            { path: '/zjadminwebarcats/content/portfolio/tags', label: 'Etichete' }
           ]
         },
         { path: '/zjadminwebarcats/testimonials', label: 'Testimoniale' }

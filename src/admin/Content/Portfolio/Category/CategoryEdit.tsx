@@ -5,24 +5,70 @@ import { Save, X } from 'lucide-react';
 const CategoryEdit: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const token = localStorage.getItem('userToken') || sessionStorage.getItem('userToken');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: ''
   });
 
   useEffect(() => {
-    // Fetch category data here
-    setFormData({
-      name: 'Sample Category',
-      description: 'Sample Description'
-    });
-  }, [id]);
+    const fetchCategory = async () => {
+      try {
+        const response = await fetch(`http://localhost:5002/api/portfolio/category/get/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch category');
+        }
+
+        const data = await response.json();
+
+        setFormData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategory();
+
+  }, [id, token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // API call would go here
-    navigate('/zjadminwebarcats/portfolio/categories');
+
+    try {
+      const response = await fetch(`http://localhost:5002/api/portfolio/category/put/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/zjadminwebarcats/content/portfolio/categories', {
+          state: { successMessage: `Categoria ${formData.name} a fost actualizat cu succes!` },
+        });
+      } else {
+        alert(data.error || 'Eroare la actualizarea categoriei.');
+      }
+    } catch (err) {
+      console.error('Eroare la actualizarea serviciului:', err);
+      alert('A apărut o eroare la actualizarea serviciului.');
+    }
   };
+
+  if (loading) return <div className="p-6">Se încarcă...</div>;
+  if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
 
   return (
     <div className="p-6">

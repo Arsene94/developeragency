@@ -73,7 +73,7 @@ const ServiceList: React.FC = () => {
     }, 500);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchTerm, currentPage, token]);
+  }, [searchTerm, currentPage, token, fetchServices]);
 
   useEffect(() => {
     if (location.state?.successMessage) {
@@ -122,7 +122,7 @@ const ServiceList: React.FC = () => {
 
   if (loading) return <div className="p-6">Se încarcă serviciile...</div>;
   if (error) return <div className="p-6 text-red-600">Eroare: {error}</div>;
-console.log(services)
+
   return (
     <div className="p-6">
       <Snackbar
