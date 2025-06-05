@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Upload } from 'lucide-react';
 
@@ -9,7 +9,6 @@ interface Project {
   imageFile: File | null;
   slug: string;
   description: string;
-  link: string;
   technologies: string[];
 }
 
@@ -19,7 +18,7 @@ const ProjectAdd: React.FC = () => {
   const [newTechnology, setNewTechnology] = useState('');
   const [isUsingFile, setIsUsingFile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-
+  const [tags, setTags] = useState([]);
   const [formData, setFormData] = useState<Project>({
     title: '',
     category: 'e-commerce',
@@ -27,7 +26,6 @@ const ProjectAdd: React.FC = () => {
     imageFile: null,
     slug: '',
     description: '',
-    link: '',
     technologies: []
   });
 
@@ -39,6 +37,29 @@ const ProjectAdd: React.FC = () => {
     { value: 'app', label: 'Application' }
   ];
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch(`http://localhost:5002/api/portfolio/tag/all`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch project');
+        }
+
+        const data = await response.json();
+        setTags(data.tags || []);
+      } catch (err) {
+        console.error(err instanceof Error ? err.message : 'An error occurred');
+      }
+    }
+
+    fetchTags()
+  }, [token]);
+
   const handleAddTechnology = () => {
     if (newTechnology && !formData.technologies.includes(newTechnology)) {
       setFormData({
@@ -48,14 +69,14 @@ const ProjectAdd: React.FC = () => {
       setNewTechnology('');
     }
   };
-
+  console.log(tags)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData({
         ...formData,
         imageFile: file,
-        image: '' // Clear URL when file is selected
+        image: ''
       });
       setIsUsingFile(true);
     }
@@ -65,7 +86,7 @@ const ProjectAdd: React.FC = () => {
     setFormData({
       ...formData,
       image: e.target.value,
-      imageFile: null // Clear file when URL is entered
+      imageFile: null
     });
     setIsUsingFile(false);
   };
@@ -149,7 +170,6 @@ const ProjectAdd: React.FC = () => {
       formDataToSend.append('category', formData.category);
       formDataToSend.append('slug', formData.slug);
       formDataToSend.append('description', formData.description);
-      formDataToSend.append('link', formData.link);
       formDataToSend.append('technologies', JSON.stringify(formData.technologies));
 
       if (formData.imageFile) {
@@ -326,19 +346,6 @@ const ProjectAdd: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
                 rows={4}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Link Proiect
-              </label>
-              <input
-                type="url"
-                value={formData.link}
-                onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                required
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>

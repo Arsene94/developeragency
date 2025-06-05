@@ -9,7 +9,6 @@ interface Project {
   imageFile: File | null;
   slug: string;
   description: string;
-  link: string;
   technologies: string[];
 }
 
@@ -30,7 +29,6 @@ const ProjectEdit: React.FC = () => {
     imageFile: null,
     slug: '',
     description: '',
-    link: '',
     technologies: []
   });
 
@@ -76,7 +74,7 @@ const ProjectEdit: React.FC = () => {
       setFormData({
         ...formData,
         imageFile: file,
-        image: '' // Clear URL when file is selected
+        image: ''
       });
       setIsUsingFile(true);
     }
@@ -86,7 +84,7 @@ const ProjectEdit: React.FC = () => {
     setFormData({
       ...formData,
       image: e.target.value,
-      imageFile: null // Clear file when URL is entered
+      imageFile: null
     });
     setIsUsingFile(false);
   };
@@ -180,7 +178,6 @@ const ProjectEdit: React.FC = () => {
       formDataToSend.append('category', formData.category);
       formDataToSend.append('slug', formData.slug);
       formDataToSend.append('description', formData.description);
-      formDataToSend.append('link', formData.link);
       formDataToSend.append('technologies', JSON.stringify(formData.technologies));
 
       if (formData.imageFile) {
@@ -370,19 +367,6 @@ const ProjectEdit: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
                 rows={4}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Link Proiect
-              </label>
-              <input
-                type="url"
-                value={formData.link}
-                onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                required
                 className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
             </div>
