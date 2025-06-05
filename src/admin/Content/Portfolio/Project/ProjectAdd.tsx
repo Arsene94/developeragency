@@ -2,6 +2,11 @@ import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Save, X, Plus, Upload } from 'lucide-react';
 
+interface Tag {
+  id: number;
+  name: string;
+}
+
 interface Project {
   title: string;
   category: string;
@@ -9,7 +14,7 @@ interface Project {
   imageFile: File | null;
   slug: string;
   description: string;
-  technologies: string[];
+  technologies: number[]; // Changed to store tag IDs
 }
 
 const ProjectAdd: React.FC = () => {
@@ -18,7 +23,7 @@ const ProjectAdd: React.FC = () => {
   const [newTechnology, setNewTechnology] = useState('');
   const [isUsingFile, setIsUsingFile] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [formData, setFormData] = useState<Project>({
     title: '',
     category: 'e-commerce',
@@ -60,15 +65,15 @@ const ProjectAdd: React.FC = () => {
     fetchTags()
   }, [token]);
 
-  const handleAddTechnology = () => {
-    if (newTechnology && !formData.technologies.includes(newTechnology)) {
-      setFormData({
-        ...formData,
-        technologies: [...formData.technologies, newTechnology]
-      });
-      setNewTechnology('');
+  const handleAddTechnology = (tagId: number) => {
+    if (!formData.technologies.includes(tagId)) {
+      setFormData(prev => ({
+        ...prev,
+        technologies: [...prev.technologies, tagId]
+      }));
     }
   };
+
   console.log(tags)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -154,11 +159,11 @@ const ProjectAdd: React.FC = () => {
     }));
   };
 
-  const handleRemoveTechnology = (tech: string) => {
-    setFormData({
-      ...formData,
-      technologies: formData.technologies.filter(t => t !== tech)
-    });
+  const handleRemoveTechnology = (tagId: number) => {
+    setFormData(prev => ({
+      ...prev,
+      technologies: prev.technologies.filter(id => id !== tagId)
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -354,37 +359,23 @@ const ProjectAdd: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tehnologii
               </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={newTechnology}
-                  onChange={(e) => setNewTechnology(e.target.value)}
-                  className="flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  placeholder="Adaugă tehnologie"
-                />
-                <button
-                  type="button"
-                  onClick={handleAddTechnology}
-                  className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600"
-                >
-                  <Plus size={20} />
-                </button>
-              </div>
               <div className="flex flex-wrap gap-2">
-                {formData.technologies.map((tech, index) => (
-                  <span
-                    key={index}
-                    className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full flex items-center gap-2"
+                {tags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    onClick={() => 
+                      formData.technologies.includes(tag.id) 
+                        ? handleRemoveTechnology(tag.id)
+                        : handleAddTechnology(tag.id)
+                    }
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      formData.technologies.includes(tag.id)
+                        ? 'bg-teal-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
                   >
-                    {tech}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTechnology(tech)}
-                      className="text-gray-500 hover:text-red-500"
-                    >
-                      <X size={16} />
-                    </button>
-                  </span>
+                    {tag.name}
+                  </button>
                 ))}
               </div>
             </div>
