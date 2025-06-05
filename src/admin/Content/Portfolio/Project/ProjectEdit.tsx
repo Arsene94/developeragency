@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, X, Plus } from 'lucide-react';
+import { Save, X, Plus, Upload } from 'lucide-react';
 
 interface Project {
   title: string;
   category: string;
   image: string;
+  imageFile: File | null;
   slug: string;
   description: string;
   link: string;
@@ -19,11 +20,14 @@ const ProjectEdit: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newTechnology, setNewTechnology] = useState('');
+  const [isUsingFile, setIsUsingFile] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<Project>({
     title: '',
     category: '',
     image: '',
+    imageFile: null,
     slug: '',
     description: '',
     link: '',
@@ -52,7 +56,10 @@ const ProjectEdit: React.FC = () => {
         }
 
         const data = await response.json();
-        setFormData(data);
+        setFormData({
+          ...data,
+          imageFile: null
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -63,14 +70,35 @@ const ProjectEdit: React.FC = () => {
     fetchProject();
   }, [id, token]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        imageFile: file,
+        image: '' // Clear URL when file is selected
+      });
+      setIsUsingFile(true);
+    }
+  };
+
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      image: e.target.value,
+      imageFile: null // Clear file when URL is entered
+    });
+    setIsUsingFile(false);
+  };
+
   const [isCheckingSlug, setIsCheckingSlug] = useState(false);
 
   const generateSlug = (name: string) => {
     return name
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
   };
 
   const checkSlugAvailability = async (baseSlug: string) => {
@@ -147,13 +175,26 @@ const ProjectEdit: React.FC = () => {
     e.preventDefault();
 
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('title', formData.title);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('slug', formData.slug);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('link', formData.link);
+      formDataToSend.append('technologies', JSON.stringify(formData.technologies));
+
+      if (formData.imageFile) {
+        formDataToSend.append('image', formData.imageFile);
+      } else {
+        formDataToSend.append('imageUrl', formData.image);
+      }
+
       const response = await fetch(`http://localhost:5002/api/portfolio/project/put/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       const data = await response.json();
@@ -215,15 +256,84 @@ const ProjectEdit: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                URL Imagine
+                Imagine
               </label>
-              <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                required
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsUsingFile(!isUsingFile)}
+                    className={`px-4 py-2 rounded-md ${
+                      !isUsingFile 
+                        ? 'bg-teal-500 text-white' 
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    URL
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsUsingFile(!isUsingFile);
+                      if (!isUsingFile && fileInputRef.current) {
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-md ${
+                      isUsingFile 
+                        ? 'bg-teal-500 text-white' 
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    Fișier
+                  </button>
+                </div>
+
+                {isUsingFile ? (
+                  <div className="space-y-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center"
+                      >
+                        <Upload className="w-5 h-5 mr-2" />
+                        {formData.imageFile ? 'Schimbă fișierul' : 'Încarcă fișier'}
+                      </button>
+                      {formData.imageFile && (
+                        <span className="text-sm text-gray-600">
+                          {formData.imageFile.name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={handleImageUrlChange}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                )}
+
+                {formData.image && !isUsingFile && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.image}
+                      alt="Preview"
+                      className="max-w-xs rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
@@ -235,18 +345,18 @@ const ProjectEdit: React.FC = () => {
                   {`${window.location.origin}/project/`}
                 </span>
                 <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={handleSlugChange}
-                    required
-                    className="flex-1 px-4 py-2 border rounded-r-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  type="text"
+                  value={formData.slug}
+                  onChange={handleSlugChange}
+                  required
+                  className="flex-1 px-4 py-2 border rounded-r-md focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <p className="mt-1 text-sm text-gray-500">
                 {isCheckingSlug ? (
-                    'Verificare disponibilitate slug...'
+                  'Verificare disponibilitate slug...'
                 ) : (
-                    `URL-ul etichetei va fi: ${window.location.origin}/project/${formData.slug}`
+                  `URL-ul etichetei va fi: ${window.location.origin}/project/${formData.slug}`
                 )}
               </p>
             </div>
@@ -328,7 +438,7 @@ const ProjectEdit: React.FC = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 flex items-center gap-2"
+              className="px-4  py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 flex items-center gap-2"
             >
               <Save size={20} />
               Salvează
